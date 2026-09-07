@@ -21,28 +21,43 @@ function App() {
 
   useEffect(() => {
     // Читаем параметры из URL (отправляет Автопилот)
-    const params = new URLSearchParams(window.location.search);
-    const c1 = params.get("code1") || "";
-    const c2 = params.get("code2") || "";
-    const c3 = params.get("code3") || "";
-    const c4 = params.get("code4") || "";
-    setCode1(c1);
-    setCode2(c2);
-    setCode3(c3);
-    setCode4(c4);
-
-    // Также проверяем localStorage (если POST-запрос)
-    if (!c1 && !c2 && !c3 && !c4) {
+    // Поддерживаем два формата:
+    // 1. Query: ?code1=2&code2=1&code3=4&code4=3
+    // 2. Hash: #code1=2&code2=1&code3=4&code4=3
+    const queryParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.replace("#", ""));
+    
+    const c1 = queryParams.get("code1") || hashParams.get("code1") || "";
+    const c2 = queryParams.get("code2") || hashParams.get("code2") || "";
+    const c3 = queryParams.get("code3") || hashParams.get("code3") || "";
+    const c4 = queryParams.get("code4") || hashParams.get("code4") || "";
+    
+    // Если есть параметры — используем их
+    if (c1 || c2 || c3 || c4) {
+      setCode1(c1);
+      setCode2(c2);
+      setCode3(c3);
+      setCode4(c4);
+    } else {
+      // Иначе проверяем localStorage
       const stored = localStorage.getItem("karmaCodes");
       if (stored) {
         try {
           const data = JSON.parse(stored);
-          setCode1(data.code1 || "");
-          setCode2(data.code2 || "");
-          setCode3(data.code3 || "");
-          setCode4(data.code4 || "");
+          if (data.code1 || data.code2 || data.code3 || data.code4) {
+            setCode1(data.code1 || "");
+            setCode2(data.code2 || "");
+            setCode3(data.code3 || "");
+            setCode4(data.code4 || "");
+            return;
+          }
         } catch (e) { /* ignore */ }
       }
+      // Демо-режим с тестовыми данными
+      setCode1("2");
+      setCode2("1");
+      setCode3("4");
+      setCode4("3");
     }
   }, []);
 
@@ -118,8 +133,11 @@ function App() {
           </section>
         ) : (
           <section className="glass-card p-6 mb-8 text-center animate-fade-in-delay">
-            <p className="text-[#e8d5f5]">
-              Коды загружаются... Если они не появились, попробуйте открыть ссылку заново.
+            <p className="text-[#e8d5f5] mb-2">
+              ✨ Демо-режим
+            </p>
+            <p className="text-[#e8d5f5] text-sm">
+              Для получения персонального разбора перейдите по ссылке из сообщения ВКонтакте.
             </p>
           </section>
         )}
