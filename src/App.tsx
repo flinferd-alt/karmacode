@@ -17,18 +17,18 @@ const EVENT_DATES = [
   },
   { 
     date: "21 сентября", 
-    time: "18:00 МСК", 
+    time: "20:00 МСК", 
     topic: "Практики активации кодов",
     startDate: "2026-09-21",
-    startTime: "18:00",
+    startTime: "20:00",
     duration: 90
   },
   { 
-    date: "24 сентября", 
-    time: "18:00 МСК", 
+    date: "23 сентября", 
+    time: "20:00 МСК", 
     topic: "Индивидуальные разборы",
-    startDate: "2026-09-24",
-    startTime: "18:00",
+    startDate: "2026-09-23",
+    startTime: "20:00",
     duration: 90
   },
 ];
