@@ -228,6 +228,7 @@ function CodeButton({ code, label, onClick }: { code: string; label: string; onC
 // Экран с описанием кода
 function CodeDetail({ code, data, onBack }: { code: string; data: KarmaCodeData; onBack: () => void }) {
   const [activeSection, setActiveSection] = useState<number | null>(null);
+  const [showEvents, setShowEvents] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a0a2e] via-[#2d1b4e] to-[#1a0a2e] text-white relative overflow-hidden">
@@ -397,10 +398,18 @@ function CodeDetail({ code, data, onBack }: { code: string; data: KarmaCodeData;
               </div>
             ))}
           </div>
-          <button className="w-full py-3 rounded-xl bg-gradient-to-r from-[#ffd700] to-[#ff69b4] text-[#1a0a2e] font-bold text-base hover:opacity-90 transition-opacity">
+          <button
+            onClick={() => setShowEvents(true)}
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-[#ffd700] to-[#ff69b4] text-[#1a0a2e] font-bold text-base hover:opacity-90 transition-opacity"
+          >
             Записаться на эфир ✨
           </button>
         </section>
+
+        {/* Модалка выбора календаря */}
+        {showEvents && (
+          <CalendarModal onClose={() => setShowEvents(false)} />
+        )}
 
         {/* Кнопка назад внизу */}
         <button
