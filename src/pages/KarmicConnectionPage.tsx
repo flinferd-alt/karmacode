@@ -1,4 +1,5 @@
 import { useState } from "react";
+import KarmaTriangle, { TriangleData } from "../components/KarmaTriangle";
 
 interface KarmicConnectionPageProps {
   onBack: () => void;
@@ -13,6 +14,12 @@ interface CalcResult {
   karmaCode2: number;
   karmaCode3: number;
   karmaCode4: number;
+}
+
+interface KarmicMatch {
+  code: number;
+  parentField: string;
+  childField: string;
 }
 
 // Приведение к числу от 1 до 22
@@ -84,11 +91,59 @@ function calculateCodes(dateStr: string): CalcResult | null {
   };
 }
 
+// Парсинг даты для сравнения
+function parseDate(dateStr: string): Date | null {
+  const parts = dateStr.split(".");
+  if (parts.length !== 3) return null;
+  const day = parseInt(parts[0]);
+  const month = parseInt(parts[1]) - 1; // Месяцы в JS с 0
+  const year = parseInt(parts[2]);
+  if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+  return new Date(year, month, day);
+}
+
+// Поиск кармических переходов от родителя к ребенку
+function findKarmicMatches(parent: CalcResult, child: CalcResult): KarmicMatch[] {
+  const matches: KarmicMatch[] = [];
+  
+  // Верхние коды ребенка (КР, КС1, КС2)
+  const childTopCodes = [
+    { code: child.birthCode, field: "КР" },
+    { code: child.destinyCode1, field: "КС1" },
+    { code: child.destinyCode2, field: "КС2" }
+  ];
+  
+  // Кода Кармы родителя (КЛК1-4)
+  const parentKarmaCodes = [
+    { code: parent.karmaCode1, field: "КЛК1" },
+    { code: parent.karmaCode2, field: "КЛК2" },
+    { code: parent.karmaCode3, field: "КЛК3" },
+    { code: parent.karmaCode4, field: "КЛК4" }
+  ];
+  
+  // Проверяем совпадения
+  parentKarmaCodes.forEach(parentCode => {
+    childTopCodes.forEach(childCode => {
+      if (parentCode.code === childCode.code) {
+        matches.push({
+          code: parentCode.code,
+          parentField: parentCode.field,
+          childField: childCode.field
+        });
+      }
+    });
+  });
+  
+  return matches;
+}
+
 export default function KarmicConnectionPage({ onBack, onCodeClick }: KarmicConnectionPageProps) {
   const [date1, setDate1] = useState("");
   const [date2, setDate2] = useState("");
   const [result1, setResult1] = useState<CalcResult | null>(null);
   const [result2, setResult2] = useState<CalcResult | null>(null);
+  const [isParent1, setIsParent1] = useState<boolean>(true);
+  const [matches, setMatches] = useState<KarmicMatch[]>([]);
   const [error, setError] = useState("");
 
   const handleCalculate = () => {
@@ -102,11 +157,63 @@ export default function KarmicConnectionPage({ onBack, onCodeClick }: KarmicConn
       return;
     }
     
+    // Определяем, кто родитель (более ранняя дата)
+    const d1 = parseDate(date1);
+    const d2 = parseDate(date2);
+    
+    if (!d1 || !d2) {
+      setError("Ошибка при обработке дат");
+      return;
+    }
+    
+    const parentIsFirst = d1 <= d2;
+    setIsParent1(parentIsFirst);
+    
+    const parent = parentIsFirst ? res1 : res2;
+    const child = parentIsFirst ? res2 : res1;
+    
+    // Находим кармические переходы
+    const karmicMatches = findKarmicMatches(parent, child);
+    setMatches(karmicMatches);
+    
     setResult1(res1);
     setResult2(res2);
   };
 
+  // Получаем коды для подсветки в треугольниках
+  const getHighlightedCodes = (isParent: boolean): number[] => {
+    if (matches.length === 0) return [];
+    
+    const highlighted: number[] = [];
+    
+    if (isParent) {
+      // Для родителя подсвечиваем КЛК, которые совпадают с верхними кодами ребенка
+      const parent = isParent1 ? result1 : result2;
+      if (parent) {
+        matches.forEach(match => {
+          if (match.parentField === "КЛК1") highlighted.push(parent.karmaCode1);
+          if (match.parentField === "КЛК2") highlighted.push(parent.karmaCode2);
+          if (match.parentField === "КЛК3") highlighted.push(parent.karmaCode3);
+          if (match.parentField === "КЛК4") highlighted.push(parent.karmaCode4);
+        });
+      }
+    } else {
+      // Для ребенка подсвечиваем верхние коды, которые совпадают с КЛК родителя
+      const child = isParent1 ? result2 : result1;
+      if (child) {
+        matches.forEach(match => {
+          if (match.childField === "КР") highlighted.push(child.birthCode);
+          if (match.childField === "КС1") highlighted.push(child.destinyCode1);
+          if (match.childField === "КС2") highlighted.push(child.destinyCode2);
+        });
+      }
+    }
+    
+    return highlighted;
+  };
 
+  const parentHighlighted = result1 && result2 ? getHighlightedCodes(true) : [];
+  const childHighlighted = result1 && result2 ? getHighlightedCodes(false) : [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a0a2e] via-[#2d1b4e] to-[#1a0a2e] text-white relative overflow-hidden">
@@ -114,7 +221,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick }: KarmicConn
       <div className="floating-orb orb-1" />
       <div className="floating-orb orb-2" />
 
-      <div className="relative z-10 max-w-3xl mx-auto px-4 py-6">
+      <div className="relative z-10 max-w-4xl mx-auto px-4 py-6">
         {/* Кнопка назад */}
         <button
           onClick={onBack}
@@ -158,7 +265,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick }: KarmicConn
           
           <div className="grid md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-[#e8d5f5] text-sm mb-2">Ваша Дата</label>
+              <label className="block text-[#e8d5f5] text-sm mb-2">Дата 1</label>
               <input
                 type="text"
                 value={date1}
@@ -169,7 +276,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick }: KarmicConn
               />
             </div>
             <div>
-              <label className="block text-[#e8d5f5] text-sm mb-2">Дата того, с кем проверяем связь</label>
+              <label className="block text-[#e8d5f5] text-sm mb-2">Дата 2</label>
               <input
                 type="text"
                 value={date2}
@@ -196,164 +303,93 @@ export default function KarmicConnectionPage({ onBack, onCodeClick }: KarmicConn
         {/* Результаты */}
         {result1 && result2 && (
           <div className="animate-fade-in">
-            {/* Таблички с кодами */}
-            <div className="grid md:grid-cols-2 gap-6 mb-6">
-              {/* Дата 1 */}
-              <div className="glass-card p-5">
-                <h3 className="text-center text-lg font-bold text-[#ffd700] mb-4">
-                  Дата 1: {date1}
-                </h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center p-2 rounded-lg bg-white/5">
-                    <span className="text-[#e8d5f5] text-sm">КР (Код рождения):</span>
-                    <button 
-                      onClick={() => onCodeClick?.(result1.birthCode)}
-                      className="text-[#ffd700] font-bold text-lg hover:text-[#ff69b4] transition-colors cursor-pointer"
-                    >
-                      {result1.birthCode}
-                    </button>
-                  </div>
-                  <div className="flex justify-between items-center p-2 rounded-lg bg-white/5">
-                    <span className="text-[#e8d5f5] text-sm">КС1 (Код судьбы 1):</span>
-                    <button 
-                      onClick={() => onCodeClick?.(result1.destinyCode1)}
-                      className="text-[#ffd700] font-bold text-lg hover:text-[#ff69b4] transition-colors cursor-pointer"
-                    >
-                      {result1.destinyCode1}
-                    </button>
-                  </div>
-                  <div className="flex justify-between items-center p-2 rounded-lg bg-white/5">
-                    <span className="text-[#e8d5f5] text-sm">КС2 (Код судьбы 2):</span>
-                    <button 
-                      onClick={() => onCodeClick?.(result1.destinyCode2)}
-                      className="text-[#ffd700] font-bold text-lg hover:text-[#ff69b4] transition-colors cursor-pointer"
-                    >
-                      {result1.destinyCode2}
-                    </button>
-                  </div>
-                  <div className="border-t border-[#ffd700]/20 my-3"></div>
-                  <div className="flex justify-between items-center p-2 rounded-lg bg-white/5">
-                    <span className="text-[#e8d5f5] text-sm">КЛК 1:</span>
-                    <button 
-                      onClick={() => onCodeClick?.(result1.karmaCode1)}
-                      className="text-[#ff69b4] font-bold text-lg hover:text-[#ffd700] transition-colors cursor-pointer"
-                    >
-                      {result1.karmaCode1}
-                    </button>
-                  </div>
-                  <div className="flex justify-between items-center p-2 rounded-lg bg-white/5">
-                    <span className="text-[#e8d5f5] text-sm">КЛК 2:</span>
-                    <button 
-                      onClick={() => onCodeClick?.(result1.karmaCode2)}
-                      className="text-[#ff69b4] font-bold text-lg hover:text-[#ffd700] transition-colors cursor-pointer"
-                    >
-                      {result1.karmaCode2}
-                    </button>
-                  </div>
-                  <div className="flex justify-between items-center p-2 rounded-lg bg-white/5">
-                    <span className="text-[#e8d5f5] text-sm">КЛК 3:</span>
-                    <button 
-                      onClick={() => onCodeClick?.(result1.karmaCode3)}
-                      className="text-[#ff69b4] font-bold text-lg hover:text-[#ffd700] transition-colors cursor-pointer"
-                    >
-                      {result1.karmaCode3}
-                    </button>
-                  </div>
-                  <div className="flex justify-between items-center p-2 rounded-lg bg-white/5">
-                    <span className="text-[#e8d5f5] text-sm">КЛК 4:</span>
-                    <button 
-                      onClick={() => onCodeClick?.(result1.karmaCode4)}
-                      className="text-[#ff69b4] font-bold text-lg hover:text-[#ffd700] transition-colors cursor-pointer"
-                    >
-                      {result1.karmaCode4}
-                    </button>
-                  </div>
-                </div>
-              </div>
+            {/* Информация о родителе */}
+            <div className="glass-card p-4 mb-6 border-[#ffd700]/30">
+              <p className="text-center text-[#e8d5f5] text-sm">
+                <span className="text-[#ffd700] font-bold">Родитель:</span> {isParent1 ? date1 : date2} (более ранняя дата)
+              </p>
+              <p className="text-center text-[#e8d5f5] text-sm mt-1">
+                <span className="text-[#ff69b4] font-bold">Ребёнок:</span> {isParent1 ? date2 : date1}
+              </p>
+            </div>
 
-              {/* Дата 2 */}
-              <div className="glass-card p-5">
-                <h3 className="text-center text-lg font-bold text-[#ffd700] mb-4">
-                  Дата 2: {date2}
-                </h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center p-2 rounded-lg bg-white/5">
-                    <span className="text-[#e8d5f5] text-sm">КР (Код рождения):</span>
-                    <button 
-                      onClick={() => onCodeClick?.(result2.birthCode)}
-                      className="text-[#ffd700] font-bold text-lg hover:text-[#ff69b4] transition-colors cursor-pointer"
-                    >
-                      {result2.birthCode}
-                    </button>
-                  </div>
-                  <div className="flex justify-between items-center p-2 rounded-lg bg-white/5">
-                    <span className="text-[#e8d5f5] text-sm">КС1 (Код судьбы 1):</span>
-                    <button 
-                      onClick={() => onCodeClick?.(result2.destinyCode1)}
-                      className="text-[#ffd700] font-bold text-lg hover:text-[#ff69b4] transition-colors cursor-pointer"
-                    >
-                      {result2.destinyCode1}
-                    </button>
-                  </div>
-                  <div className="flex justify-between items-center p-2 rounded-lg bg-white/5">
-                    <span className="text-[#e8d5f5] text-sm">КС2 (Код судьбы 2):</span>
-                    <button 
-                      onClick={() => onCodeClick?.(result2.destinyCode2)}
-                      className="text-[#ffd700] font-bold text-lg hover:text-[#ff69b4] transition-colors cursor-pointer"
-                    >
-                      {result2.destinyCode2}
-                    </button>
-                  </div>
-                  <div className="border-t border-[#ffd700]/20 my-3"></div>
-                  <div className="flex justify-between items-center p-2 rounded-lg bg-white/5">
-                    <span className="text-[#e8d5f5] text-sm">КЛК 1:</span>
-                    <button 
-                      onClick={() => onCodeClick?.(result2.karmaCode1)}
-                      className="text-[#ff69b4] font-bold text-lg hover:text-[#ffd700] transition-colors cursor-pointer"
-                    >
-                      {result2.karmaCode1}
-                    </button>
-                  </div>
-                  <div className="flex justify-between items-center p-2 rounded-lg bg-white/5">
-                    <span className="text-[#e8d5f5] text-sm">КЛК 2:</span>
-                    <button 
-                      onClick={() => onCodeClick?.(result2.karmaCode2)}
-                      className="text-[#ff69b4] font-bold text-lg hover:text-[#ffd700] transition-colors cursor-pointer"
-                    >
-                      {result2.karmaCode2}
-                    </button>
-                  </div>
-                  <div className="flex justify-between items-center p-2 rounded-lg bg-white/5">
-                    <span className="text-[#e8d5f5] text-sm">КЛК 3:</span>
-                    <button 
-                      onClick={() => onCodeClick?.(result2.karmaCode3)}
-                      className="text-[#ff69b4] font-bold text-lg hover:text-[#ffd700] transition-colors cursor-pointer"
-                    >
-                      {result2.karmaCode3}
-                    </button>
-                  </div>
-                  <div className="flex justify-between items-center p-2 rounded-lg bg-white/5">
-                    <span className="text-[#e8d5f5] text-sm">КЛК 4:</span>
-                    <button 
-                      onClick={() => onCodeClick?.(result2.karmaCode4)}
-                      className="text-[#ff69b4] font-bold text-lg hover:text-[#ffd700] transition-colors cursor-pointer"
-                    >
-                      {result2.karmaCode4}
-                    </button>
-                  </div>
-                </div>
+            {/* Треугольники */}
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <KarmaTriangle
+                  data={{
+                    birthCode: result1.birthCode,
+                    destinyCode1: result1.destinyCode1,
+                    destinyCode2: result1.destinyCode2,
+                    karmaCode1: result1.karmaCode1,
+                    karmaCode2: result1.karmaCode2,
+                    karmaCode3: result1.karmaCode3,
+                    karmaCode4: result1.karmaCode4
+                  }}
+                  highlightedCodes={isParent1 ? parentHighlighted : childHighlighted}
+                  title={`${isParent1 ? "Родитель" : "Ребёнок"}: ${date1}`}
+                  onCodeClick={onCodeClick}
+                />
+              </div>
+              <div>
+                <KarmaTriangle
+                  data={{
+                    birthCode: result2.birthCode,
+                    destinyCode1: result2.destinyCode1,
+                    destinyCode2: result2.destinyCode2,
+                    karmaCode1: result2.karmaCode1,
+                    karmaCode2: result2.karmaCode2,
+                    karmaCode3: result2.karmaCode3,
+                    karmaCode4: result2.karmaCode4
+                  }}
+                  highlightedCodes={isParent1 ? childHighlighted : parentHighlighted}
+                  title={`${isParent1 ? "Ребёнок" : "Родитель"}: ${date2}`}
+                  onCodeClick={onCodeClick}
+                />
               </div>
             </div>
+
+            {/* Кармические переходы */}
+            {matches.length > 0 && (
+              <section className="glass-card p-6 mb-6 border-[#ffd700]/30 animate-pulse-slow">
+                <h2 className="text-xl font-bold text-[#ffd700] mb-4 text-center">
+                  🔥 Обнаружены Кармические Переходы!
+                </h2>
+                <p className="text-[#e8d5f5] text-sm text-center mb-4">
+                  Коды Кармы родителя передались в верхние коды ребёнка:
+                </p>
+                <div className="space-y-3">
+                  {matches.map((match, i) => (
+                    <div key={i} className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-[#ffd700]/10 to-[#ff69b4]/10 border border-[#ffd700]/30">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ffd700] to-[#ff69b4] flex items-center justify-center text-[#1a0a2e] font-bold text-xl shadow-lg">
+                        {match.code}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-[#e8d5f5] text-sm">
+                          <span className="text-[#ff69b4] font-bold">Родитель ({match.parentField})</span>
+                          <span className="mx-2 text-[#ffd700]">→</span>
+                          <span className="text-[#ffd700] font-bold">Ребёнок ({match.childField})</span>
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[#e8d5f5]/80 text-sm mt-4 text-center italic">
+                  Эти совпадения показывают переход кармы от родителя к ребёнку. 
+                  Обратите внимание на эти коды — они несут важные уроки для ваших отношений.
+                </p>
+              </section>
+            )}
+
+            {matches.length === 0 && (
+              <section className="glass-card p-6 mb-6">
+                <p className="text-[#e8d5f5] text-center">
+                  Кармических переходов между этими датами не обнаружено.
+                </p>
+              </section>
+            )}
           </div>
         )}
-
-        {/* Кнопка назад */}
-        <button
-          onClick={onBack}
-          className="w-full py-3 rounded-xl border border-[#ffd700]/30 text-[#ffd700] font-medium text-sm hover:bg-[#ffd700]/10 transition-colors mb-6"
-        >
-          ← Вернуться назад
-        </button>
 
         {/* Футер */}
         <footer className="text-center text-[#e8d5f5]/60 text-xs pb-6">

@@ -203,22 +203,6 @@ function App() {
               {code3 && <CodeButton code={code3} label="3 КЛК" onClick={() => handleCodeClick(code3, "karmaCode3")} />}
               {code4 && <CodeButton code={code4} label="4 КЛК" onClick={() => handleCodeClick(code4, "karmaCode4")} />}
             </div>
-            
-            {/* Кнопка "Узнать свой Урок года" */}
-            <button
-              onClick={handleGoToLesson}
-              className="mt-6 w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/30"
-            >
-              📖 Узнать свой Урок года
-            </button>
-            
-            {/* Кнопка "Калькулятор кармической связи" */}
-            <button
-              onClick={handleGoToCalculator}
-              className="mt-3 w-full py-4 rounded-xl bg-gradient-to-r from-[#ffd700] to-[#ff69b4] text-[#1a0a2e] font-bold text-base hover:opacity-90 transition-opacity shadow-lg shadow-yellow-500/30"
-            >
-              🔗 Калькулятор кармической связи
-            </button>
           </section>
         ) : (
           <section className="glass-card p-6 mb-8 text-center animate-fade-in-delay">
@@ -322,15 +306,6 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
       <div className="floating-orb orb-2" />
 
       <div className="relative z-10 max-w-2xl mx-auto px-4 py-6">
-        {/* Кнопка назад */}
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 text-[#ffd700] mb-6 hover:opacity-80 transition-opacity"
-        >
-          <span>←</span>
-          <span className="text-sm">Назад к кодам</span>
-        </button>
-
         {/* Заголовок кода */}
         <header className="text-center mb-8 animate-fade-in">
           <div className="text-6xl mb-3 animate-pulse-slow">{data.symbol}</div>

@@ -73,15 +73,6 @@ export default function YearLessonPage({ lessonCode, onBack, onCodeClick }: Year
       <div className="floating-orb orb-2" />
 
       <div className="relative z-10 max-w-2xl mx-auto px-4 py-6">
-        {/* Кнопка назад */}
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 text-[#ffd700] mb-6 hover:opacity-80 transition-opacity"
-        >
-          <span>←</span>
-          <span className="text-sm">Назад</span>
-        </button>
-
         {/* Заголовок */}
         <header className="text-center mb-8 animate-fade-in">
           <div className="text-6xl mb-3">📖</div>
@@ -194,7 +185,7 @@ export default function YearLessonPage({ lessonCode, onBack, onCodeClick }: Year
                   </span>
                 </button>
                 
-                {expandedSign === sign.num && (
+                {(expandedSign === sign.num || showAllSigns) && (
                   <div className="px-3 pb-3 pt-0 animate-fade-in">
                     <p className="text-[#e8d5f5]/80 text-sm pl-11 leading-relaxed">
                       {sign.text}
