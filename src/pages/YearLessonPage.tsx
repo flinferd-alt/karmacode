@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getYearLessonData, YearLessonData } from "../data/yearLessons";
+import { getKarmaData } from "../data/karmaCodes";
 import KarmaTriangle from "../components/KarmaTriangle";
 
 interface YearLessonPageProps {
@@ -97,7 +98,7 @@ export default function YearLessonPage({ lessonCode, onBack, onCodeClick }: Year
           onCodeClick={onCodeClick}
         />
 
-        {/* Описание кода */}
+        {/* Описание урока года */}
         {data && (
           <section className="glass-card p-6 mb-6 animate-fade-in-delay">
             <h2 className="text-xl font-bold text-[#ffd700] mb-4 flex items-center gap-2">
@@ -111,6 +112,63 @@ export default function YearLessonPage({ lessonCode, onBack, onCodeClick }: Year
             </p>
           </section>
         )}
+
+        {/* Описание кода кармы */}
+        {(() => {
+          const karmaData = getKarmaData(String(lessonCode));
+          return (
+            <section className="glass-card p-6 mb-6 animate-fade-in-delay">
+              <h2 className="text-xl font-bold text-[#ffd700] mb-4 flex items-center gap-2">
+                <span>{karmaData.symbol}</span> Код {lessonCode}: {karmaData.title}
+              </h2>
+              <p className="text-[#ff69b4] text-sm font-medium mb-4 italic">
+                {karmaData.subtitle}
+              </p>
+              <p className="text-[#e8d5f5] leading-relaxed text-sm md:text-base mb-4">
+                {karmaData.shortDesc}
+              </p>
+              
+              {/* Сильные стороны */}
+              {karmaData.strengths.length > 0 && (
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-[#ffd700] mb-2">💫 Сильные стороны:</h3>
+                  <ul className="space-y-1">
+                    {karmaData.strengths.map((strength, i) => (
+                      <li key={i} className="text-[#e8d5f5] text-sm flex items-start gap-2">
+                        <span className="text-[#ffd700]">•</span>
+                        <span>{strength}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Кармические задачи */}
+              {karmaData.karmaTasks.length > 0 && (
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-[#ffd700] mb-2">🎯 Кармические задачи:</h3>
+                  <ul className="space-y-1">
+                    {karmaData.karmaTasks.map((task, i) => (
+                      <li key={i} className="text-[#e8d5f5] text-sm flex items-start gap-2">
+                        <span className="text-[#ffd700]">•</span>
+                        <span>{task}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Аффирмация */}
+              {karmaData.affirmation && (
+                <div className="mt-4 p-4 bg-gradient-to-r from-purple-900/30 to-pink-900/30 rounded-xl">
+                  <p className="text-[#ffd700] italic text-center">
+                    "{karmaData.affirmation}"
+                  </p>
+                </div>
+              )}
+            </section>
+          );
+        })()}
 
         {/* 9 признаков */}
         <section className="glass-card p-6 mb-6 animate-fade-in-delay">

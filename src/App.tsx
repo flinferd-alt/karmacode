@@ -108,6 +108,7 @@ function App() {
   const hasCodes = codes.length > 0;
 
   const handleCodeClick = (code: string | number) => {
+    setCurrentPage("main");
     setSelectedCode(String(code));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
