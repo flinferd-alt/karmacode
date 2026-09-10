@@ -21,6 +21,7 @@ interface KarmaTriangleProps {
   data: TriangleData;
   highlightedCodes?: number[]; // Коды для подсветки (совпадения)
   title?: string;
+  onCodeClick?: (code: number) => void; // Обработчик клика по коду
 }
 
 interface CircleProps {
@@ -28,34 +29,38 @@ interface CircleProps {
   label: string;
   highlighted?: boolean;
   tooltip?: string;
+  onClick?: () => void;
 }
 
-function KarmaCircle({ value, label, highlighted, tooltip }: CircleProps) {
+function KarmaCircle({ value, label, highlighted, tooltip, onClick }: CircleProps) {
   const [showTooltip, setShowTooltip] = useState(false);
   
   const hasValue = value !== null && value !== undefined;
+  const isClickable = hasValue && onClick;
   
   return (
     <div 
-      className="relative flex flex-col items-center"
+      className={`relative flex flex-col items-center ${isClickable ? 'cursor-pointer' : ''}`}
       onMouseEnter={() => tooltip && setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
+      onClick={onClick}
     >
       <div 
         className={`
-          w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center
-          font-bold text-lg md:text-xl transition-all duration-300
+          w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center
+          font-bold text-xl md:text-2xl transition-all duration-300
           ${hasValue 
             ? highlighted 
-              ? "bg-gradient-to-br from-yellow-400 to-amber-500 text-purple-900 shadow-lg shadow-yellow-400/50 animate-pulse-slow"
-              : "bg-gradient-to-br from-purple-500 to-pink-500 text-white shadow-md"
-            : "bg-gray-200 text-gray-400"
+              ? "bg-gradient-to-br from-yellow-400 via-amber-400 to-yellow-500 text-purple-900 shadow-2xl shadow-yellow-400/60 animate-pulse-slow ring-4 ring-yellow-300/50 scale-110"
+              : "bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500 text-white shadow-xl hover:shadow-2xl hover:scale-105"
+            : "bg-gray-300 text-gray-500"
           }
+          ${isClickable ? 'hover:ring-4 hover:ring-purple-300/50' : ''}
         `}
       >
         {hasValue ? value : "—"}
       </div>
-      <span className="text-xs text-purple-700 mt-1 text-center leading-tight max-w-[80px]">
+      <span className="text-xs md:text-sm text-purple-800 mt-2 text-center leading-tight max-w-[90px] font-medium">
         {label}
       </span>
       
@@ -70,14 +75,20 @@ function KarmaCircle({ value, label, highlighted, tooltip }: CircleProps) {
   );
 }
 
-export default function KarmaTriangle({ data, highlightedCodes = [], title }: KarmaTriangleProps) {
+export default function KarmaTriangle({ data, highlightedCodes = [], title, onCodeClick }: KarmaTriangleProps) {
   const isHighlighted = (code: number | null | undefined) => 
     code !== null && code !== undefined && highlightedCodes.includes(code);
+
+  const handleClick = (code: number | null | undefined) => {
+    if (code !== null && code !== undefined && onCodeClick) {
+      onCodeClick(code);
+    }
+  };
 
   return (
     <div className="relative w-full max-w-md mx-auto my-8">
       {/* Светлый фон с градиентом */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-purple-50 to-purple-100 rounded-3xl shadow-xl"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-white via-purple-50 to-purple-100 rounded-3xl shadow-2xl"></div>
       
       {/* Содержимое */}
       <div className="relative p-6 md:p-8">
@@ -95,6 +106,7 @@ export default function KarmaTriangle({ data, highlightedCodes = [], title }: Ka
               label="Денежный код"
               highlighted={isHighlighted(data.moneyCode)}
               tooltip={data.moneyCode ? `Код: ${data.moneyCode}` : undefined}
+              onClick={() => handleClick(data.moneyCode)}
             />
           </div>
           
@@ -105,12 +117,14 @@ export default function KarmaTriangle({ data, highlightedCodes = [], title }: Ka
               label="Урок года"
               highlighted={isHighlighted(data.yearLesson)}
               tooltip={data.yearLesson ? `Код: ${data.yearLesson}` : undefined}
+              onClick={() => handleClick(data.yearLesson)}
             />
             <KarmaCircle 
               value={data.yearResource} 
               label="Ресурс года"
               highlighted={isHighlighted(data.yearResource)}
               tooltip={data.yearResource ? `Код: ${data.yearResource}` : undefined}
+              onClick={() => handleClick(data.yearResource)}
             />
           </div>
           
@@ -121,24 +135,28 @@ export default function KarmaTriangle({ data, highlightedCodes = [], title }: Ka
               label="Код Кармы 1"
               highlighted={isHighlighted(data.karmaCode1)}
               tooltip={data.karmaCode1 ? `КЛК 1: ${data.karmaCode1}` : undefined}
+              onClick={() => handleClick(data.karmaCode1)}
             />
             <KarmaCircle 
               value={data.karmaCode2} 
               label="Код Кармы 2"
               highlighted={isHighlighted(data.karmaCode2)}
               tooltip={data.karmaCode2 ? `КЛК 2: ${data.karmaCode2}` : undefined}
+              onClick={() => handleClick(data.karmaCode2)}
             />
             <KarmaCircle 
               value={data.karmaCode3} 
               label="Код Кармы 3"
               highlighted={isHighlighted(data.karmaCode3)}
               tooltip={data.karmaCode3 ? `КЛК 3: ${data.karmaCode3}` : undefined}
+              onClick={() => handleClick(data.karmaCode3)}
             />
             <KarmaCircle 
               value={data.karmaCode4} 
               label="Код Кармы 4"
               highlighted={isHighlighted(data.karmaCode4)}
               tooltip={data.karmaCode4 ? `КЛК 4: ${data.karmaCode4}` : undefined}
+              onClick={() => handleClick(data.karmaCode4)}
             />
           </div>
           
@@ -149,41 +167,53 @@ export default function KarmaTriangle({ data, highlightedCodes = [], title }: Ka
               label="Код рождения"
               highlighted={isHighlighted(data.birthCode)}
               tooltip={data.birthCode ? `КР: ${data.birthCode}` : undefined}
+              onClick={() => handleClick(data.birthCode)}
             />
             <KarmaCircle 
               value={data.destinyCode1} 
               label="Код судьбы 1"
               highlighted={isHighlighted(data.destinyCode1)}
               tooltip={data.destinyCode1 ? `КС 1: ${data.destinyCode1}` : undefined}
+              onClick={() => handleClick(data.destinyCode1)}
             />
             <KarmaCircle 
               value={data.destinyCode2} 
               label="Код судьбы 2"
               highlighted={isHighlighted(data.destinyCode2)}
               tooltip={data.destinyCode2 ? `КС 2: ${data.destinyCode2}` : undefined}
+              onClick={() => handleClick(data.destinyCode2)}
             />
           </div>
         </div>
         
-        {/* Декоративный треугольник */}
+        {/* Декоративный треугольник - более яркий и современный */}
         <svg 
-          className="absolute inset-0 w-full h-full pointer-events-none opacity-20"
+          className="absolute inset-0 w-full h-full pointer-events-none"
           viewBox="0 0 400 500"
           preserveAspectRatio="none"
         >
+          <defs>
+            <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FFD700" stopOpacity="0.8" />
+              <stop offset="50%" stopColor="#FFA500" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="#FFD700" stopOpacity="0.8" />
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
           <path 
             d="M 200 50 L 350 450 L 50 450 Z" 
             fill="none" 
             stroke="url(#goldGradient)" 
-            strokeWidth="2"
+            strokeWidth="4"
+            filter="url(#glow)"
+            opacity="0.6"
           />
-          <defs>
-            <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#FFD700" />
-              <stop offset="50%" stopColor="#FFA500" />
-              <stop offset="100%" stopColor="#FFD700" />
-            </linearGradient>
-          </defs>
         </svg>
       </div>
     </div>

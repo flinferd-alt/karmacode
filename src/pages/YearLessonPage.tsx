@@ -5,6 +5,7 @@ import KarmaTriangle from "../components/KarmaTriangle";
 interface YearLessonPageProps {
   lessonCode: number;
   onBack: () => void;
+  onCodeClick?: (code: number) => void;
 }
 
 const SIGNS_TEXT = [
@@ -46,7 +47,7 @@ const SIGNS_TEXT = [
   }
 ];
 
-export default function YearLessonPage({ lessonCode, onBack }: YearLessonPageProps) {
+export default function YearLessonPage({ lessonCode, onBack, onCodeClick }: YearLessonPageProps) {
   const [data, setData] = useState<YearLessonData | null>(null);
   const [expandedSign, setExpandedSign] = useState<number | null>(null);
   const [showAllSigns, setShowAllSigns] = useState(false);
@@ -93,7 +94,23 @@ export default function YearLessonPage({ lessonCode, onBack }: YearLessonPagePro
         <KarmaTriangle 
           data={{ yearLesson: lessonCode }}
           title="Ваш Урок Года"
+          onCodeClick={onCodeClick}
         />
+
+        {/* Описание кода */}
+        {data && (
+          <section className="glass-card p-6 mb-6 animate-fade-in-delay">
+            <h2 className="text-xl font-bold text-[#ffd700] mb-4 flex items-center gap-2">
+              <span>🌟</span> {data.title}
+            </h2>
+            <p className="text-[#ff69b4] text-sm font-medium mb-4 italic">
+              {data.shortDesc}
+            </p>
+            <p className="text-[#e8d5f5] leading-relaxed text-sm md:text-base">
+              {data.fullDesc}
+            </p>
+          </section>
+        )}
 
         {/* 9 признаков */}
         <section className="glass-card p-6 mb-6 animate-fade-in-delay">
@@ -146,19 +163,6 @@ export default function YearLessonPage({ lessonCode, onBack }: YearLessonPagePro
           </p>
           <p className="text-[#e8d5f5] leading-relaxed text-sm md:text-base mt-4">
             Именно этим мы и будем заниматься дальше на практикуме. И я очень рада, что вы оказались здесь именно сейчас. В нужное время и в нужном месте.
-          </p>
-        </section>
-
-        {/* Описание урока года */}
-        <section className="glass-card p-6 mb-6 animate-fade-in-delay-2">
-          <h2 className="text-xl font-bold text-[#ffd700] mb-4 flex items-center gap-2">
-            <span>🌟</span> {data.title}
-          </h2>
-          <p className="text-[#ff69b4] text-sm font-medium mb-4 italic">
-            {data.shortDesc}
-          </p>
-          <p className="text-[#e8d5f5] leading-relaxed text-sm md:text-base">
-            {data.fullDesc}
           </p>
         </section>
 

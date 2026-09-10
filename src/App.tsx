@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getKarmaData, KarmaCodeData } from "./data/karmaCodes";
 import YearLessonPage from "./pages/YearLessonPage";
 import KarmicConnectionPage from "./pages/KarmicConnectionPage";
+import KarmaTriangle from "./components/KarmaTriangle";
 
 // ============================================
 // 📅 ДАТЫ ЭФИРОВ — МЕНЯТЬ ЗДЕСЬ
@@ -106,8 +107,8 @@ function App() {
   const codes = [code1, code2, code3, code4].filter(Boolean);
   const hasCodes = codes.length > 0;
 
-  const handleCodeClick = (code: string) => {
-    setSelectedCode(code);
+  const handleCodeClick = (code: string | number) => {
+    setSelectedCode(String(code));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -130,12 +131,12 @@ function App() {
 
   // Страница "Урок года"
   if (currentPage === "lesson") {
-    return <YearLessonPage lessonCode={lessonCode} onBack={handleBack} />;
+    return <YearLessonPage lessonCode={lessonCode} onBack={handleBack} onCodeClick={handleCodeClick} />;
   }
 
   // Страница "Калькулятор кармической связи"
   if (currentPage === "calculator") {
-    return <KarmicConnectionPage onBack={handleBack} />;
+    return <KarmicConnectionPage onBack={handleBack} onCodeClick={handleCodeClick} />;
   }
 
   // Экран с описанием конкретного кода
@@ -312,6 +313,12 @@ function CodeDetail({ code, data, onBack }: { code: string; data: KarmaCodeData;
           </h1>
           <p className="text-[#ff69b4] mt-2 text-sm font-medium">{data.subtitle}</p>
         </header>
+
+        {/* Треугольник с кодом */}
+        <KarmaTriangle 
+          data={{ karmaCode1: parseInt(code) }}
+          title="Ваш код кармы"
+        />
 
         {/* Краткое описание */}
         <section className="glass-card p-5 mb-6 animate-fade-in-delay">

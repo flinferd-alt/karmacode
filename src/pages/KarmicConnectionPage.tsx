@@ -4,6 +4,7 @@ import jsPDF from "jspdf";
 
 interface KarmicConnectionPageProps {
   onBack: () => void;
+  onCodeClick?: (code: number) => void;
 }
 
 interface CalcResult {
@@ -105,7 +106,7 @@ function calculateCodes(dateStr: string): CalcResult | null {
   };
 }
 
-export default function KarmicConnectionPage({ onBack }: KarmicConnectionPageProps) {
+export default function KarmicConnectionPage({ onBack, onCodeClick }: KarmicConnectionPageProps) {
   const [date1, setDate1] = useState("");
   const [date2, setDate2] = useState("");
   const [result1, setResult1] = useState<CalcResult | null>(null);
@@ -207,15 +208,33 @@ export default function KarmicConnectionPage({ onBack }: KarmicConnectionPagePro
 
   const matches = result1 && result2 ? findMatches(result1, result2) : [];
   
-  // Подсвечиваем совпадающие коды
+  // Подсвечиваем совпадающие коды в обоих треугольниках
+  // В треугольнике 1 подсвечиваем коды, которые совпадают с верхними кодами треугольника 2
   const highlighted1 = result1 && result2 ? 
-    [result2.birthCode, result2.destinyCode1, result2.destinyCode2].filter(c => 
-      [result1.karmaCode1, result1.karmaCode2, result1.karmaCode3, result1.karmaCode4].includes(c)
+    [
+      result1.karmaCode1,
+      result1.karmaCode2,
+      result1.karmaCode3,
+      result1.karmaCode4,
+      result1.birthCode,
+      result1.destinyCode1,
+      result1.destinyCode2
+    ].filter(c => 
+      [result2.birthCode, result2.destinyCode1, result2.destinyCode2].includes(c)
     ) : [];
   
+  // В треугольнике 2 подсвечиваем коды, которые совпадают с верхними кодами треугольника 1
   const highlighted2 = result1 && result2 ?
-    [result1.birthCode, result1.destinyCode1, result1.destinyCode2].filter(c =>
-      [result2.karmaCode1, result2.karmaCode2, result2.karmaCode3, result2.karmaCode4].includes(c)
+    [
+      result2.karmaCode1,
+      result2.karmaCode2,
+      result2.karmaCode3,
+      result2.karmaCode4,
+      result2.birthCode,
+      result2.destinyCode1,
+      result2.destinyCode2
+    ].filter(c =>
+      [result1.birthCode, result1.destinyCode1, result1.destinyCode2].includes(c)
     ) : [];
 
   return (
@@ -321,6 +340,7 @@ export default function KarmicConnectionPage({ onBack }: KarmicConnectionPagePro
                   }}
                   highlightedCodes={highlighted1}
                   title="Дата 1"
+                  onCodeClick={onCodeClick}
                 />
               </div>
               <div>
@@ -336,6 +356,7 @@ export default function KarmicConnectionPage({ onBack }: KarmicConnectionPagePro
                   }}
                   highlightedCodes={highlighted2}
                   title="Дата 2"
+                  onCodeClick={onCodeClick}
                 />
               </div>
             </div>
@@ -372,41 +393,6 @@ export default function KarmicConnectionPage({ onBack }: KarmicConnectionPagePro
               </section>
             )}
 
-            {/* Кнопки экспорта */}
-            <section className="glass-card p-6 mb-6">
-              <h3 className="text-lg font-bold text-[#ffd700] mb-4 text-center">
-                Поделиться результатами
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <button
-                  onClick={handleExportPDF}
-                  className="py-3 px-4 rounded-xl bg-red-600 text-white font-semibold text-sm hover:bg-red-700 transition-colors"
-                >
-                  📄 PDF
-                </button>
-                <button
-                  onClick={handleShareVK}
-                  className="py-3 px-4 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition-colors"
-                >
-                  💙 VK
-                </button>
-                <button
-                  onClick={handleShareTelegram}
-                  className="py-3 px-4 rounded-xl bg-sky-500 text-white font-semibold text-sm hover:bg-sky-600 transition-colors"
-                >
-                  ✈️ Telegram
-                </button>
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(window.location.href);
-                    alert("Ссылка скопирована!");
-                  }}
-                  className="py-3 px-4 rounded-xl bg-purple-600 text-white font-semibold text-sm hover:bg-purple-700 transition-colors"
-                >
-                  🔗 Копировать
-                </button>
-              </div>
-            </section>
           </div>
         )}
 
