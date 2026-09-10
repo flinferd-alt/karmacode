@@ -134,7 +134,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
   const [isParent1, setIsParent1] = useState<boolean>(true);
   const [matches, setMatches] = useState<KarmicMatch[]>([]);
   const [error, setError] = useState("");
-  const [linePositions, setLinePositions] = useState<{from: number, to: number}[]>([]);
+  const [linePositions, setLinePositions] = useState<{fromX: number, fromY: number, toX: number, toY: number}[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const parentRefs = useRef<{[key: string]: HTMLDivElement | null}>({});
   const childRefs = useRef<{[key: string]: HTMLDivElement | null}>({});
@@ -177,7 +177,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
       const container = containerRef.current;
       const containerRect = container.getBoundingClientRect();
       
-      const positions: {from: number, to: number}[] = [];
+      const positions: {fromX: number, fromY: number, toX: number, toY: number}[] = [];
       
       matches.forEach((match) => {
         const parentKey = match.parentField;
@@ -190,22 +190,38 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
           const parentRect = parentEl.getBoundingClientRect();
           const childRect = childEl.getBoundingClientRect();
           
+          // Определяем, какая дата родитель
+          const parentIsLeft = isParent1;
+          
+          const fromX = parentIsLeft 
+            ? parentRect.right - containerRect.left 
+            : parentRect.left - containerRect.left;
           const fromY = parentRect.top + parentRect.height / 2 - containerRect.top;
+          
+          const toX = parentIsLeft 
+            ? childRect.left - containerRect.left 
+            : childRect.right - containerRect.left;
           const toY = childRect.top + childRect.height / 2 - containerRect.top;
           
-          positions.push({ from: fromY, to: toY });
+          positions.push({ fromX, fromY, toX, toY });
         }
       });
       
       setLinePositions(positions);
     }
-  }, [matches, result1, result2]);
+  }, [matches, result1, result2, isParent1]);
 
   // Проверка, подсвечивать ли поле
   const isHighlighted = (field: string, isParent: boolean): boolean => {
-    return matches.some(m => 
-      isParent ? m.parentField === field : m.childField === field
-    );
+    return matches.some(m => {
+      if (isParent) {
+        // Для родителя: подсвечиваем КЛК, если они есть в matches
+        return m.parentField === field;
+      } else {
+        // Для ребёнка: подсвечиваем КР/КС1/КС2, если они есть в matches
+        return m.childField === field;
+      }
+    });
   };
 
   return (
@@ -311,7 +327,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
               {/* SVG линии между табличками */}
               {linePositions.length > 0 && (
                 <svg 
-                  className="absolute inset-0 w-full h-full pointer-events-none z-10 hidden md:block"
+                  className="absolute inset-0 w-full h-full pointer-events-none z-10"
                   style={{ overflow: 'visible' }}
                 >
                   <defs>
@@ -331,25 +347,25 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                   {linePositions.map((pos, i) => (
                     <g key={i}>
                       <line
-                        x1="50%"
-                        y1={pos.from}
-                        x2="50%"
-                        y2={pos.to}
+                        x1={pos.fromX}
+                        y1={pos.fromY}
+                        x2={pos.toX}
+                        y2={pos.toY}
                         stroke="url(#lineGradient)"
                         strokeWidth="3"
                         filter="url(#glow)"
                         className="animate-pulse"
                       />
                       <circle
-                        cx="50%"
-                        cy={pos.from}
+                        cx={pos.fromX}
+                        cy={pos.fromY}
                         r="5"
                         fill="#ffd700"
                         className="animate-ping"
                       />
                       <circle
-                        cx="50%"
-                        cy={pos.to}
+                        cx={pos.toX}
+                        cy={pos.toY}
                         r="5"
                         fill="#ff69b4"
                         className="animate-ping"
@@ -366,7 +382,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                 </h3>
                 <div className="space-y-2">
                   <div 
-                    ref={el => { parentRefs.current["КР"] = el; childRefs.current["КР"] = el; }}
+                    ref={el => { if (isParent1) parentRefs.current["КР"] = el; else childRefs.current["КР"] = el; }}
                     className={`flex justify-between items-center p-2 rounded-lg transition-all ${
                       isHighlighted("КР", isParent1) 
                         ? "bg-gradient-to-r from-[#ffd700]/30 to-[#ff69b4]/30 border border-[#ffd700]/50 shadow-lg shadow-[#ffd700]/20" 
@@ -386,7 +402,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     </button>
                   </div>
                   <div 
-                    ref={el => { parentRefs.current["КС1"] = el; childRefs.current["КС1"] = el; }}
+                    ref={el => { if (isParent1) parentRefs.current["КС1"] = el; else childRefs.current["КС1"] = el; }}
                     className={`flex justify-between items-center p-2 rounded-lg transition-all ${
                       isHighlighted("КС1", isParent1) 
                         ? "bg-gradient-to-r from-[#ffd700]/30 to-[#ff69b4]/30 border border-[#ffd700]/50 shadow-lg shadow-[#ffd700]/20" 
@@ -406,7 +422,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     </button>
                   </div>
                   <div 
-                    ref={el => { parentRefs.current["КС2"] = el; childRefs.current["КС2"] = el; }}
+                    ref={el => { if (isParent1) parentRefs.current["КС2"] = el; else childRefs.current["КС2"] = el; }}
                     className={`flex justify-between items-center p-2 rounded-lg transition-all ${
                       isHighlighted("КС2", isParent1) 
                         ? "bg-gradient-to-r from-[#ffd700]/30 to-[#ff69b4]/30 border border-[#ffd700]/50 shadow-lg shadow-[#ffd700]/20" 
@@ -427,9 +443,9 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                   </div>
                   <div className="border-t border-[#ffd700]/20 my-3"></div>
                   <div 
-                    ref={el => { parentRefs.current["КЛК1"] = el; childRefs.current["КЛК1"] = el; }}
+                    ref={el => { if (isParent1) parentRefs.current["КЛК1"] = el; else childRefs.current["КЛК1"] = el; }}
                     className={`flex justify-between items-center p-2 rounded-lg transition-all ${
-                      isHighlighted("КЛК1", !isParent1) 
+                      isHighlighted("КЛК1", isParent1) 
                         ? "bg-gradient-to-r from-[#ff69b4]/30 to-[#ffd700]/30 border border-[#ff69b4]/50 shadow-lg shadow-[#ff69b4]/20" 
                         : "bg-white/5"
                     }`}
@@ -438,7 +454,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     <button 
                       onClick={() => onCodeClick?.(result1.karmaCode1)}
                       className={`font-bold text-lg transition-colors cursor-pointer ${
-                        isHighlighted("КЛК1", !isParent1) 
+                        isHighlighted("КЛК1", isParent1) 
                           ? "text-[#ff69b4] animate-pulse" 
                           : "text-[#ff69b4] hover:text-[#ffd700]"
                       }`}
@@ -447,9 +463,9 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     </button>
                   </div>
                   <div 
-                    ref={el => { parentRefs.current["КЛК2"] = el; childRefs.current["КЛК2"] = el; }}
+                    ref={el => { if (isParent1) parentRefs.current["КЛК2"] = el; else childRefs.current["КЛК2"] = el; }}
                     className={`flex justify-between items-center p-2 rounded-lg transition-all ${
-                      isHighlighted("КЛК2", !isParent1) 
+                      isHighlighted("КЛК2", isParent1) 
                         ? "bg-gradient-to-r from-[#ff69b4]/30 to-[#ffd700]/30 border border-[#ff69b4]/50 shadow-lg shadow-[#ff69b4]/20" 
                         : "bg-white/5"
                     }`}
@@ -458,7 +474,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     <button 
                       onClick={() => onCodeClick?.(result1.karmaCode2)}
                       className={`font-bold text-lg transition-colors cursor-pointer ${
-                        isHighlighted("КЛК2", !isParent1) 
+                        isHighlighted("КЛК2", isParent1) 
                           ? "text-[#ff69b4] animate-pulse" 
                           : "text-[#ff69b4] hover:text-[#ffd700]"
                       }`}
@@ -467,9 +483,9 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     </button>
                   </div>
                   <div 
-                    ref={el => { parentRefs.current["КЛК3"] = el; childRefs.current["КЛК3"] = el; }}
+                    ref={el => { if (isParent1) parentRefs.current["КЛК3"] = el; else childRefs.current["КЛК3"] = el; }}
                     className={`flex justify-between items-center p-2 rounded-lg transition-all ${
-                      isHighlighted("КЛК3", !isParent1) 
+                      isHighlighted("КЛК3", isParent1) 
                         ? "bg-gradient-to-r from-[#ff69b4]/30 to-[#ffd700]/30 border border-[#ff69b4]/50 shadow-lg shadow-[#ff69b4]/20" 
                         : "bg-white/5"
                     }`}
@@ -478,7 +494,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     <button 
                       onClick={() => onCodeClick?.(result1.karmaCode3)}
                       className={`font-bold text-lg transition-colors cursor-pointer ${
-                        isHighlighted("КЛК3", !isParent1) 
+                        isHighlighted("КЛК3", isParent1) 
                           ? "text-[#ff69b4] animate-pulse" 
                           : "text-[#ff69b4] hover:text-[#ffd700]"
                       }`}
@@ -487,9 +503,9 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     </button>
                   </div>
                   <div 
-                    ref={el => { parentRefs.current["КЛК4"] = el; childRefs.current["КЛК4"] = el; }}
+                    ref={el => { if (isParent1) parentRefs.current["КЛК4"] = el; else childRefs.current["КЛК4"] = el; }}
                     className={`flex justify-between items-center p-2 rounded-lg transition-all ${
-                      isHighlighted("КЛК4", !isParent1) 
+                      isHighlighted("КЛК4", isParent1) 
                         ? "bg-gradient-to-r from-[#ff69b4]/30 to-[#ffd700]/30 border border-[#ff69b4]/50 shadow-lg shadow-[#ff69b4]/20" 
                         : "bg-white/5"
                     }`}
@@ -498,7 +514,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     <button 
                       onClick={() => onCodeClick?.(result1.karmaCode4)}
                       className={`font-bold text-lg transition-colors cursor-pointer ${
-                        isHighlighted("КЛК4", !isParent1) 
+                        isHighlighted("КЛК4", isParent1) 
                           ? "text-[#ff69b4] animate-pulse" 
                           : "text-[#ff69b4] hover:text-[#ffd700]"
                       }`}
@@ -516,7 +532,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                 </h3>
                 <div className="space-y-2">
                   <div 
-                    ref={el => { parentRefs.current["КР"] = el; childRefs.current["КР"] = el; }}
+                    ref={el => { if (!isParent1) parentRefs.current["КР"] = el; else childRefs.current["КР"] = el; }}
                     className={`flex justify-between items-center p-2 rounded-lg transition-all ${
                       isHighlighted("КР", !isParent1) 
                         ? "bg-gradient-to-r from-[#ffd700]/30 to-[#ff69b4]/30 border border-[#ffd700]/50 shadow-lg shadow-[#ffd700]/20" 
@@ -536,7 +552,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     </button>
                   </div>
                   <div 
-                    ref={el => { parentRefs.current["КС1"] = el; childRefs.current["КС1"] = el; }}
+                    ref={el => { if (!isParent1) parentRefs.current["КС1"] = el; else childRefs.current["КС1"] = el; }}
                     className={`flex justify-between items-center p-2 rounded-lg transition-all ${
                       isHighlighted("КС1", !isParent1) 
                         ? "bg-gradient-to-r from-[#ffd700]/30 to-[#ff69b4]/30 border border-[#ffd700]/50 shadow-lg shadow-[#ffd700]/20" 
@@ -556,7 +572,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     </button>
                   </div>
                   <div 
-                    ref={el => { parentRefs.current["КС2"] = el; childRefs.current["КС2"] = el; }}
+                    ref={el => { if (!isParent1) parentRefs.current["КС2"] = el; else childRefs.current["КС2"] = el; }}
                     className={`flex justify-between items-center p-2 rounded-lg transition-all ${
                       isHighlighted("КС2", !isParent1) 
                         ? "bg-gradient-to-r from-[#ffd700]/30 to-[#ff69b4]/30 border border-[#ffd700]/50 shadow-lg shadow-[#ffd700]/20" 
@@ -577,9 +593,9 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                   </div>
                   <div className="border-t border-[#ffd700]/20 my-3"></div>
                   <div 
-                    ref={el => { parentRefs.current["КЛК1"] = el; childRefs.current["КЛК1"] = el; }}
+                    ref={el => { if (!isParent1) parentRefs.current["КЛК1"] = el; else childRefs.current["КЛК1"] = el; }}
                     className={`flex justify-between items-center p-2 rounded-lg transition-all ${
-                      isHighlighted("КЛК1", isParent1) 
+                      isHighlighted("КЛК1", !isParent1) 
                         ? "bg-gradient-to-r from-[#ff69b4]/30 to-[#ffd700]/30 border border-[#ff69b4]/50 shadow-lg shadow-[#ff69b4]/20" 
                         : "bg-white/5"
                     }`}
@@ -588,7 +604,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     <button 
                       onClick={() => onCodeClick?.(result2.karmaCode1)}
                       className={`font-bold text-lg transition-colors cursor-pointer ${
-                        isHighlighted("КЛК1", isParent1) 
+                        isHighlighted("КЛК1", !isParent1) 
                           ? "text-[#ff69b4] animate-pulse" 
                           : "text-[#ff69b4] hover:text-[#ffd700]"
                       }`}
@@ -597,9 +613,9 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     </button>
                   </div>
                   <div 
-                    ref={el => { parentRefs.current["КЛК2"] = el; childRefs.current["КЛК2"] = el; }}
+                    ref={el => { if (!isParent1) parentRefs.current["КЛК2"] = el; else childRefs.current["КЛК2"] = el; }}
                     className={`flex justify-between items-center p-2 rounded-lg transition-all ${
-                      isHighlighted("КЛК2", isParent1) 
+                      isHighlighted("КЛК2", !isParent1) 
                         ? "bg-gradient-to-r from-[#ff69b4]/30 to-[#ffd700]/30 border border-[#ff69b4]/50 shadow-lg shadow-[#ff69b4]/20" 
                         : "bg-white/5"
                     }`}
@@ -608,7 +624,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     <button 
                       onClick={() => onCodeClick?.(result2.karmaCode2)}
                       className={`font-bold text-lg transition-colors cursor-pointer ${
-                        isHighlighted("КЛК2", isParent1) 
+                        isHighlighted("КЛК2", !isParent1) 
                           ? "text-[#ff69b4] animate-pulse" 
                           : "text-[#ff69b4] hover:text-[#ffd700]"
                       }`}
@@ -617,9 +633,9 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     </button>
                   </div>
                   <div 
-                    ref={el => { parentRefs.current["КЛК3"] = el; childRefs.current["КЛК3"] = el; }}
+                    ref={el => { if (!isParent1) parentRefs.current["КЛК3"] = el; else childRefs.current["КЛК3"] = el; }}
                     className={`flex justify-between items-center p-2 rounded-lg transition-all ${
-                      isHighlighted("КЛК3", isParent1) 
+                      isHighlighted("КЛК3", !isParent1) 
                         ? "bg-gradient-to-r from-[#ff69b4]/30 to-[#ffd700]/30 border border-[#ff69b4]/50 shadow-lg shadow-[#ff69b4]/20" 
                         : "bg-white/5"
                     }`}
@@ -628,7 +644,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     <button 
                       onClick={() => onCodeClick?.(result2.karmaCode3)}
                       className={`font-bold text-lg transition-colors cursor-pointer ${
-                        isHighlighted("КЛК3", isParent1) 
+                        isHighlighted("КЛК3", !isParent1) 
                           ? "text-[#ff69b4] animate-pulse" 
                           : "text-[#ff69b4] hover:text-[#ffd700]"
                       }`}
@@ -637,9 +653,9 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     </button>
                   </div>
                   <div 
-                    ref={el => { parentRefs.current["КЛК4"] = el; childRefs.current["КЛК4"] = el; }}
+                    ref={el => { if (!isParent1) parentRefs.current["КЛК4"] = el; else childRefs.current["КЛК4"] = el; }}
                     className={`flex justify-between items-center p-2 rounded-lg transition-all ${
-                      isHighlighted("КЛК4", isParent1) 
+                      isHighlighted("КЛК4", !isParent1) 
                         ? "bg-gradient-to-r from-[#ff69b4]/30 to-[#ffd700]/30 border border-[#ff69b4]/50 shadow-lg shadow-[#ff69b4]/20" 
                         : "bg-white/5"
                     }`}
@@ -648,7 +664,7 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     <button 
                       onClick={() => onCodeClick?.(result2.karmaCode4)}
                       className={`font-bold text-lg transition-colors cursor-pointer ${
-                        isHighlighted("КЛК4", isParent1) 
+                        isHighlighted("КЛК4", !isParent1) 
                           ? "text-[#ff69b4] animate-pulse" 
                           : "text-[#ff69b4] hover:text-[#ffd700]"
                       }`}
