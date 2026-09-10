@@ -43,6 +43,7 @@ function App() {
   const [code3, setCode3] = useState<string>("");
   const [code4, setCode4] = useState<string>("");
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
+  const [trianglePosition, setTrianglePosition] = useState<string>("karmaCode1"); // Позиция кода в треугольнике
   const [showEvents, setShowEvents] = useState(false);
   const [currentPage, setCurrentPage] = useState<"main" | "lesson" | "calculator">("main");
   const [lessonCode, setLessonCode] = useState<number>(1);
@@ -107,9 +108,10 @@ function App() {
   const codes = [code1, code2, code3, code4].filter(Boolean);
   const hasCodes = codes.length > 0;
 
-  const handleCodeClick = (code: string | number) => {
+  const handleCodeClick = (code: string | number, position: string = "karmaCode1") => {
     setCurrentPage("main");
     setSelectedCode(String(code));
+    setTrianglePosition(position);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -125,6 +127,11 @@ function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Специальная функция для клика по коду из урока года
+  const handleCodeClickFromLesson = (code: number) => {
+    handleCodeClick(code, "yearLesson");
+  };
+
   const handleGoToCalculator = () => {
     setCurrentPage("calculator");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -132,7 +139,7 @@ function App() {
 
   // Страница "Урок года"
   if (currentPage === "lesson") {
-    return <YearLessonPage lessonCode={lessonCode} onBack={handleBack} onCodeClick={handleCodeClick} />;
+    return <YearLessonPage lessonCode={lessonCode} onBack={handleBack} onCodeClick={handleCodeClickFromLesson} />;
   }
 
   // Страница "Калькулятор кармической связи"
@@ -143,7 +150,7 @@ function App() {
   // Экран с описанием конкретного кода
   if (selectedCode) {
     const data = getKarmaData(selectedCode);
-    return <CodeDetail code={selectedCode} data={data} onBack={handleBack} />;
+    return <CodeDetail code={selectedCode} data={data} onBack={handleBack} trianglePosition={trianglePosition} />;
   }
 
   // Главная страница
@@ -191,10 +198,10 @@ function App() {
               Ваши коды
             </h2>
             <div className="grid grid-cols-2 gap-4">
-              {code1 && <CodeButton code={code1} label="1 КЛК" onClick={() => handleCodeClick(code1)} />}
-              {code2 && <CodeButton code={code2} label="2 КЛК" onClick={() => handleCodeClick(code2)} />}
-              {code3 && <CodeButton code={code3} label="3 КЛК" onClick={() => handleCodeClick(code3)} />}
-              {code4 && <CodeButton code={code4} label="4 КЛК" onClick={() => handleCodeClick(code4)} />}
+              {code1 && <CodeButton code={code1} label="1 КЛК" onClick={() => handleCodeClick(code1, "karmaCode1")} />}
+              {code2 && <CodeButton code={code2} label="2 КЛК" onClick={() => handleCodeClick(code2, "karmaCode2")} />}
+              {code3 && <CodeButton code={code3} label="3 КЛК" onClick={() => handleCodeClick(code3, "karmaCode3")} />}
+              {code4 && <CodeButton code={code4} label="4 КЛК" onClick={() => handleCodeClick(code4, "karmaCode4")} />}
             </div>
             
             {/* Кнопка "Узнать свой Урок года" */}
@@ -285,9 +292,28 @@ function CodeButton({ code, label, onClick }: { code: string; label: string; onC
 }
 
 // Экран с описанием кода
-function CodeDetail({ code, data, onBack }: { code: string; data: KarmaCodeData; onBack: () => void }) {
+function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { code: string; data: KarmaCodeData; onBack: () => void; trianglePosition?: string }) {
   const [activeSection, setActiveSection] = useState<number | null>(null);
   const [showEvents, setShowEvents] = useState(false);
+  
+  // Формируем данные для треугольника в зависимости от позиции
+  const getTriangleData = () => {
+    const codeNum = parseInt(code);
+    switch (trianglePosition) {
+      case "yearLesson":
+        return { yearLesson: codeNum };
+      case "karmaCode1":
+        return { karmaCode1: codeNum };
+      case "karmaCode2":
+        return { karmaCode2: codeNum };
+      case "karmaCode3":
+        return { karmaCode3: codeNum };
+      case "karmaCode4":
+        return { karmaCode4: codeNum };
+      default:
+        return { karmaCode1: codeNum };
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a0a2e] via-[#2d1b4e] to-[#1a0a2e] text-white relative overflow-hidden">
@@ -317,8 +343,8 @@ function CodeDetail({ code, data, onBack }: { code: string; data: KarmaCodeData;
 
         {/* Треугольник с кодом */}
         <KarmaTriangle 
-          data={{ karmaCode1: parseInt(code) }}
-          title="Ваш код кармы"
+          data={getTriangleData()}
+          title={trianglePosition === "yearLesson" ? "Ваш урок года" : "Ваш код кармы"}
         />
 
         {/* Краткое описание */}
