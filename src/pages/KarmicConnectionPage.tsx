@@ -278,7 +278,17 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
               <input
                 type="text"
                 value={date1}
-                onChange={(e) => setDate1(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, '');
+                  let formatted = value;
+                  if (value.length >= 2) {
+                    formatted = value.slice(0, 2) + '.' + value.slice(2);
+                  }
+                  if (value.length >= 4) {
+                    formatted = value.slice(0, 2) + '.' + value.slice(2, 4) + '.' + value.slice(4, 8);
+                  }
+                  setDate1(formatted);
+                }}
                 placeholder="дд.мм.гггг"
                 className="w-full px-4 py-3 rounded-xl bg-purple-900/40 backdrop-blur-md border border-purple-500/30 text-white placeholder-purple-400/40 focus:outline-none focus:border-purple-400/60 focus:ring-2 focus:ring-purple-500/20 text-center text-lg tracking-wider"
                 maxLength={10}
@@ -289,7 +299,17 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
               <input
                 type="text"
                 value={date2}
-                onChange={(e) => setDate2(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, '');
+                  let formatted = value;
+                  if (value.length >= 2) {
+                    formatted = value.slice(0, 2) + '.' + value.slice(2);
+                  }
+                  if (value.length >= 4) {
+                    formatted = value.slice(0, 2) + '.' + value.slice(2, 4) + '.' + value.slice(4, 8);
+                  }
+                  setDate2(formatted);
+                }}
                 placeholder="дд.мм.гггг"
                 className="w-full px-4 py-3 rounded-xl bg-purple-900/40 backdrop-blur-md border border-purple-500/30 text-white placeholder-purple-400/40 focus:outline-none focus:border-purple-400/60 focus:ring-2 focus:ring-purple-500/20 text-center text-lg tracking-wider"
                 maxLength={10}
