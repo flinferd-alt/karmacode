@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { getKarmaData, KarmaCodeData } from "./data/karmaCodes";
+import YearLessonPage from "./pages/YearLessonPage";
+import KarmicConnectionPage from "./pages/KarmicConnectionPage";
 
 // ============================================
 // 📅 ДАТЫ ЭФИРОВ — МЕНЯТЬ ЗДЕСЬ
@@ -41,6 +43,8 @@ function App() {
   const [code4, setCode4] = useState<string>("");
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
   const [showEvents, setShowEvents] = useState(false);
+  const [currentPage, setCurrentPage] = useState<"main" | "lesson" | "calculator">("main");
+  const [lessonCode, setLessonCode] = useState<number>(1);
 
   useEffect(() => {
     // Читаем параметры из URL (отправляет Автопилот)
@@ -54,6 +58,21 @@ function App() {
     const c2 = queryParams.get("code2") || hashParams.get("code2") || "";
     const c3 = queryParams.get("code3") || hashParams.get("code3") || "";
     const c4 = queryParams.get("code4") || hashParams.get("code4") || "";
+    
+    // Проверяем параметры lesson и calc
+    const lesson = queryParams.get("lesson") || hashParams.get("lesson");
+    const calc = queryParams.get("calc") || hashParams.get("calc");
+    
+    if (lesson) {
+      setLessonCode(parseInt(lesson) || 1);
+      setCurrentPage("lesson");
+      return;
+    }
+    
+    if (calc === "1") {
+      setCurrentPage("calculator");
+      return;
+    }
     
     // Если есть параметры — используем их
     if (c1 || c2 || c3 || c4) {
@@ -94,8 +113,30 @@ function App() {
 
   const handleBack = () => {
     setSelectedCode(null);
+    setCurrentPage("main");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  const handleGoToLesson = () => {
+    setCurrentPage("lesson");
+    setLessonCode(parseInt(code1) || 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleGoToCalculator = () => {
+    setCurrentPage("calculator");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Страница "Урок года"
+  if (currentPage === "lesson") {
+    return <YearLessonPage lessonCode={lessonCode} onBack={handleBack} />;
+  }
+
+  // Страница "Калькулятор кармической связи"
+  if (currentPage === "calculator") {
+    return <KarmicConnectionPage onBack={handleBack} />;
+  }
 
   // Экран с описанием конкретного кода
   if (selectedCode) {
@@ -153,6 +194,22 @@ function App() {
               {code3 && <CodeButton code={code3} label="3 КЛК" onClick={() => handleCodeClick(code3)} />}
               {code4 && <CodeButton code={code4} label="4 КЛК" onClick={() => handleCodeClick(code4)} />}
             </div>
+            
+            {/* Кнопка "Узнать свой Урок года" */}
+            <button
+              onClick={handleGoToLesson}
+              className="mt-6 w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/30"
+            >
+              📖 Узнать свой Урок года
+            </button>
+            
+            {/* Кнопка "Калькулятор кармической связи" */}
+            <button
+              onClick={handleGoToCalculator}
+              className="mt-3 w-full py-4 rounded-xl bg-gradient-to-r from-[#ffd700] to-[#ff69b4] text-[#1a0a2e] font-bold text-base hover:opacity-90 transition-opacity shadow-lg shadow-yellow-500/30"
+            >
+              🔗 Калькулятор кармической связи
+            </button>
           </section>
         ) : (
           <section className="glass-card p-6 mb-8 text-center animate-fade-in-delay">
