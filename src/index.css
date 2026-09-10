@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+/* ============================================
+   КОДЫ КАРМЫ — Стили
+   Фиолетовый + Золотой + Розовый
+   ============================================ */
+
+@theme {
+  --color-purple-deep: #1a0a2e;
+  --color-purple-mid: #2d1b4e;
+  --color-gold: #ffd700;
+  --color-pink: #ff69b4;
+  --color-lavender: #e8d5f5;
+  --color-violet: #9b59b6;
+}
+
+/* Базовые стили */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Стеклянная карточка */
+.glass-card {
+  background: rgba(45, 27, 78, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 215, 0, 0.15);
+  border-radius: 1.25rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Звёздный фон */
+.stars-bg {
+  position: fixed;
+  inset: 0;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, rgba(255, 215, 0, 0.3), transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255, 105, 180, 0.2), transparent),
+    radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(1px 1px at 130px 80px, rgba(255, 215, 0, 0.2), transparent),
+    radial-gradient(2px 2px at 160px 30px, rgba(155, 89, 182, 0.3), transparent),
+    radial-gradient(1px 1px at 200px 60px, rgba(255, 255, 255, 0.2), transparent);
+  background-size: 250px 120px;
+  animation: twinkle 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Плавающие орбы */
+.floating-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.orb-1 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, #9b59b6, transparent);
+  top: -100px;
+  right: -100px;
+  animation: float1 12s ease-in-out infinite;
+}
+
+.orb-2 {
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, #ff69b4, transparent);
+  bottom: -80px;
+  left: -80px;
+  animation: float2 15s ease-in-out infinite;
+}
+
+.orb-3 {
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, #ffd700, transparent);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: float3 10s ease-in-out infinite;
+}
+
+@keyframes float1 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-30px, 30px); }
+}
+
+@keyframes float2 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(30px, -20px); }
+}
+
+@keyframes float3 {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.2); }
+}
+
+/* Анимации появления */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-fade-in-delay {
+  animation: fadeIn 0.6s ease-out 0.2s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fadeIn 0.6s ease-out 0.4s forwards;
+  opacity: 0;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out forwards;
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+/* Кнопка кода */
+.code-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.code-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 105, 180, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.code-button:hover::before {
+  opacity: 1;
+}
+
+/* Скроллбар */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(26, 10, 46, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 215, 0, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 215, 0, 0.5);
+}
