@@ -144,7 +144,7 @@ function App() {
 
   // Страница "Калькулятор кармической связи"
   if (currentPage === "calculator") {
-    return <KarmicConnectionPage onBack={handleBack} onCodeClick={handleCodeClick} />;
+    return <KarmicConnectionPage onBack={handleBack} onCodeClick={handleCodeClick} onGoToLesson={handleGoToLesson} onGoToCalculator={handleGoToCalculator} />;
   }
 
   // Экран с описанием конкретного кода
@@ -203,6 +203,22 @@ function App() {
               {code3 && <CodeButton code={code3} label="3 КЛК" onClick={() => handleCodeClick(code3, "karmaCode3")} />}
               {code4 && <CodeButton code={code4} label="4 КЛК" onClick={() => handleCodeClick(code4, "karmaCode4")} />}
             </div>
+            
+            {/* Кнопка "Узнать свой Урок года" */}
+            <button
+              onClick={handleGoToLesson}
+              className="mt-6 w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/30"
+            >
+              📖 Узнать свой Урок года
+            </button>
+            
+            {/* Кнопка "Калькулятор кармической связи" */}
+            <button
+              onClick={handleGoToCalculator}
+              className="mt-3 w-full py-4 rounded-xl bg-gradient-to-r from-[#ffd700] to-[#ff69b4] text-[#1a0a2e] font-bold text-base hover:opacity-90 transition-opacity shadow-lg shadow-yellow-500/30"
+            >
+              🔗 Калькулятор кармической связи
+            </button>
           </section>
         ) : (
           <section className="glass-card p-6 mb-8 text-center animate-fade-in-delay">

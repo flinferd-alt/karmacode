@@ -1,9 +1,11 @@
-import { useState } from "react";
-import KarmaTriangle, { TriangleData } from "../components/KarmaTriangle";
+import { useState, useRef, useEffect } from "react";
+import { getKarmaData } from "../data/karmaCodes";
 
 interface KarmicConnectionPageProps {
   onBack: () => void;
   onCodeClick?: (code: number) => void;
+  onGoToLesson?: () => void;
+  onGoToCalculator?: () => void;
 }
 
 interface CalcResult {
@@ -24,7 +26,7 @@ interface KarmicMatch {
 
 // Приведение к числу от 1 до 22
 function reduceTo22(num: number): number {
-  if (num === 0) return 22; // Правило Шута
+  if (num === 0) return 22;
   while (num > 22) {
     num -= 22;
   }
@@ -38,7 +40,6 @@ function sumOfDigits(num: number): number {
 
 // Расчёт кодов для даты
 function calculateCodes(dateStr: string): CalcResult | null {
-  // Парсим дату в формате дд.мм.гггг
   const parts = dateStr.split(".");
   if (parts.length !== 3) return null;
   
@@ -49,34 +50,25 @@ function calculateCodes(dateStr: string): CalcResult | null {
   if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
   if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > 2100) return null;
   
-  // КР - код рождения (день)
   const birthCode = reduceTo22(day);
-  
-  // КС1 - код судьбы 1 (сумма ВСЕХ цифр даты)
   const allDigitsSum = sumOfDigits(day) + sumOfDigits(month) + sumOfDigits(year);
   const destinyCode1 = reduceTo22(allDigitsSum);
   
-  // Для КС2 и КЛК нужно привести день, месяц, год отдельно
   const D = reduceTo22(day);
   const M = reduceTo22(month);
   const Y = reduceTo22(sumOfDigits(year));
   
-  // КС2 - код судьбы 2 (сумма приведенных D, M, Y)
   const destinyCode2 = reduceTo22(D + M + Y);
   
-  // КЛК1 - |D - M|
   let karmaCode1 = Math.abs(D - M);
   if (karmaCode1 === 0) karmaCode1 = 22;
   
-  // КЛК2 - |D - Y|
   let karmaCode2 = Math.abs(D - Y);
   if (karmaCode2 === 0) karmaCode2 = 22;
   
-  // КЛК3 - |КЛК1 - КЛК2|
   let karmaCode3 = Math.abs(karmaCode1 - karmaCode2);
   if (karmaCode3 === 0) karmaCode3 = 22;
   
-  // КЛК4 - |M - Y|
   let karmaCode4 = Math.abs(M - Y);
   if (karmaCode4 === 0) karmaCode4 = 22;
   
@@ -96,7 +88,7 @@ function parseDate(dateStr: string): Date | null {
   const parts = dateStr.split(".");
   if (parts.length !== 3) return null;
   const day = parseInt(parts[0]);
-  const month = parseInt(parts[1]) - 1; // Месяцы в JS с 0
+  const month = parseInt(parts[1]) - 1;
   const year = parseInt(parts[2]);
   if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
   return new Date(year, month, day);
@@ -106,14 +98,12 @@ function parseDate(dateStr: string): Date | null {
 function findKarmicMatches(parent: CalcResult, child: CalcResult): KarmicMatch[] {
   const matches: KarmicMatch[] = [];
   
-  // Верхние коды ребенка (КР, КС1, КС2)
   const childTopCodes = [
     { code: child.birthCode, field: "КР" },
     { code: child.destinyCode1, field: "КС1" },
     { code: child.destinyCode2, field: "КС2" }
   ];
   
-  // Кода Кармы родителя (КЛК1-4)
   const parentKarmaCodes = [
     { code: parent.karmaCode1, field: "КЛК1" },
     { code: parent.karmaCode2, field: "КЛК2" },
@@ -121,7 +111,6 @@ function findKarmicMatches(parent: CalcResult, child: CalcResult): KarmicMatch[]
     { code: parent.karmaCode4, field: "КЛК4" }
   ];
   
-  // Проверяем совпадения
   parentKarmaCodes.forEach(parentCode => {
     childTopCodes.forEach(childCode => {
       if (parentCode.code === childCode.code) {
@@ -137,7 +126,7 @@ function findKarmicMatches(parent: CalcResult, child: CalcResult): KarmicMatch[]
   return matches;
 }
 
-export default function KarmicConnectionPage({ onBack, onCodeClick }: KarmicConnectionPageProps) {
+export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson, onGoToCalculator }: KarmicConnectionPageProps) {
   const [date1, setDate1] = useState("");
   const [date2, setDate2] = useState("");
   const [result1, setResult1] = useState<CalcResult | null>(null);
@@ -145,6 +134,10 @@ export default function KarmicConnectionPage({ onBack, onCodeClick }: KarmicConn
   const [isParent1, setIsParent1] = useState<boolean>(true);
   const [matches, setMatches] = useState<KarmicMatch[]>([]);
   const [error, setError] = useState("");
+  const [linePositions, setLinePositions] = useState<{from: number, to: number}[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const parentRefs = useRef<{[key: string]: HTMLDivElement | null}>({});
+  const childRefs = useRef<{[key: string]: HTMLDivElement | null}>({});
 
   const handleCalculate = () => {
     setError("");
@@ -157,7 +150,6 @@ export default function KarmicConnectionPage({ onBack, onCodeClick }: KarmicConn
       return;
     }
     
-    // Определяем, кто родитель (более ранняя дата)
     const d1 = parseDate(date1);
     const d2 = parseDate(date2);
     
@@ -172,7 +164,6 @@ export default function KarmicConnectionPage({ onBack, onCodeClick }: KarmicConn
     const parent = parentIsFirst ? res1 : res2;
     const child = parentIsFirst ? res2 : res1;
     
-    // Находим кармические переходы
     const karmicMatches = findKarmicMatches(parent, child);
     setMatches(karmicMatches);
     
@@ -180,40 +171,42 @@ export default function KarmicConnectionPage({ onBack, onCodeClick }: KarmicConn
     setResult2(res2);
   };
 
-  // Получаем коды для подсветки в треугольниках
-  const getHighlightedCodes = (isParent: boolean): number[] => {
-    if (matches.length === 0) return [];
-    
-    const highlighted: number[] = [];
-    
-    if (isParent) {
-      // Для родителя подсвечиваем КЛК, которые совпадают с верхними кодами ребенка
-      const parent = isParent1 ? result1 : result2;
-      if (parent) {
-        matches.forEach(match => {
-          if (match.parentField === "КЛК1") highlighted.push(parent.karmaCode1);
-          if (match.parentField === "КЛК2") highlighted.push(parent.karmaCode2);
-          if (match.parentField === "КЛК3") highlighted.push(parent.karmaCode3);
-          if (match.parentField === "КЛК4") highlighted.push(parent.karmaCode4);
-        });
-      }
-    } else {
-      // Для ребенка подсвечиваем верхние коды, которые совпадают с КЛК родителя
-      const child = isParent1 ? result2 : result1;
-      if (child) {
-        matches.forEach(match => {
-          if (match.childField === "КР") highlighted.push(child.birthCode);
-          if (match.childField === "КС1") highlighted.push(child.destinyCode1);
-          if (match.childField === "КС2") highlighted.push(child.destinyCode2);
-        });
-      }
+  // Вычисление позиций линий после рендера
+  useEffect(() => {
+    if (matches.length > 0 && containerRef.current) {
+      const container = containerRef.current;
+      const containerRect = container.getBoundingClientRect();
+      
+      const positions: {from: number, to: number}[] = [];
+      
+      matches.forEach((match) => {
+        const parentKey = match.parentField;
+        const childKey = match.childField;
+        
+        const parentEl = parentRefs.current[parentKey];
+        const childEl = childRefs.current[childKey];
+        
+        if (parentEl && childEl) {
+          const parentRect = parentEl.getBoundingClientRect();
+          const childRect = childEl.getBoundingClientRect();
+          
+          const fromY = parentRect.top + parentRect.height / 2 - containerRect.top;
+          const toY = childRect.top + childRect.height / 2 - containerRect.top;
+          
+          positions.push({ from: fromY, to: toY });
+        }
+      });
+      
+      setLinePositions(positions);
     }
-    
-    return highlighted;
-  };
+  }, [matches, result1, result2]);
 
-  const parentHighlighted = result1 && result2 ? getHighlightedCodes(true) : [];
-  const childHighlighted = result1 && result2 ? getHighlightedCodes(false) : [];
+  // Проверка, подсвечивать ли поле
+  const isHighlighted = (field: string, isParent: boolean): boolean => {
+    return matches.some(m => 
+      isParent ? m.parentField === field : m.childField === field
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1a0a2e] via-[#2d1b4e] to-[#1a0a2e] text-white relative overflow-hidden">
@@ -313,39 +306,357 @@ export default function KarmicConnectionPage({ onBack, onCodeClick }: KarmicConn
               </p>
             </div>
 
-            {/* Треугольники */}
-            <div className="grid md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <KarmaTriangle
-                  data={{
-                    birthCode: result1.birthCode,
-                    destinyCode1: result1.destinyCode1,
-                    destinyCode2: result1.destinyCode2,
-                    karmaCode1: result1.karmaCode1,
-                    karmaCode2: result1.karmaCode2,
-                    karmaCode3: result1.karmaCode3,
-                    karmaCode4: result1.karmaCode4
-                  }}
-                  highlightedCodes={isParent1 ? parentHighlighted : childHighlighted}
-                  title={`${isParent1 ? "Родитель" : "Ребёнок"}: ${date1}`}
-                  onCodeClick={onCodeClick}
-                />
+            {/* Таблички с кодами и линиями */}
+            <div ref={containerRef} className="relative grid md:grid-cols-2 gap-6 mb-6">
+              {/* SVG линии между табличками */}
+              {linePositions.length > 0 && (
+                <svg 
+                  className="absolute inset-0 w-full h-full pointer-events-none z-10 hidden md:block"
+                  style={{ overflow: 'visible' }}
+                >
+                  <defs>
+                    <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#ffd700" stopOpacity="1" />
+                      <stop offset="50%" stopColor="#ff69b4" stopOpacity="1" />
+                      <stop offset="100%" stopColor="#ffd700" stopOpacity="1" />
+                    </linearGradient>
+                    <filter id="glow">
+                      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                      <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
+                  </defs>
+                  {linePositions.map((pos, i) => (
+                    <g key={i}>
+                      <line
+                        x1="50%"
+                        y1={pos.from}
+                        x2="50%"
+                        y2={pos.to}
+                        stroke="url(#lineGradient)"
+                        strokeWidth="3"
+                        filter="url(#glow)"
+                        className="animate-pulse"
+                      />
+                      <circle
+                        cx="50%"
+                        cy={pos.from}
+                        r="5"
+                        fill="#ffd700"
+                        className="animate-ping"
+                      />
+                      <circle
+                        cx="50%"
+                        cy={pos.to}
+                        r="5"
+                        fill="#ff69b4"
+                        className="animate-ping"
+                      />
+                    </g>
+                  ))}
+                </svg>
+              )}
+
+              {/* Дата 1 */}
+              <div className="glass-card p-5 relative z-20">
+                <h3 className="text-center text-lg font-bold text-[#ffd700] mb-4">
+                  {isParent1 ? "Родитель" : "Ребёнок"}: {date1}
+                </h3>
+                <div className="space-y-2">
+                  <div 
+                    ref={el => { parentRefs.current["КР"] = el; childRefs.current["КР"] = el; }}
+                    className={`flex justify-between items-center p-2 rounded-lg transition-all ${
+                      isHighlighted("КР", isParent1) 
+                        ? "bg-gradient-to-r from-[#ffd700]/30 to-[#ff69b4]/30 border border-[#ffd700]/50 shadow-lg shadow-[#ffd700]/20" 
+                        : "bg-white/5"
+                    }`}
+                  >
+                    <span className="text-[#e8d5f5] text-sm">КР (Код рождения):</span>
+                    <button 
+                      onClick={() => onCodeClick?.(result1.birthCode)}
+                      className={`font-bold text-lg transition-colors cursor-pointer ${
+                        isHighlighted("КР", isParent1) 
+                          ? "text-[#ffd700] animate-pulse" 
+                          : "text-[#ffd700] hover:text-[#ff69b4]"
+                      }`}
+                    >
+                      {result1.birthCode}
+                    </button>
+                  </div>
+                  <div 
+                    ref={el => { parentRefs.current["КС1"] = el; childRefs.current["КС1"] = el; }}
+                    className={`flex justify-between items-center p-2 rounded-lg transition-all ${
+                      isHighlighted("КС1", isParent1) 
+                        ? "bg-gradient-to-r from-[#ffd700]/30 to-[#ff69b4]/30 border border-[#ffd700]/50 shadow-lg shadow-[#ffd700]/20" 
+                        : "bg-white/5"
+                    }`}
+                  >
+                    <span className="text-[#e8d5f5] text-sm">КС1 (Код судьбы 1):</span>
+                    <button 
+                      onClick={() => onCodeClick?.(result1.destinyCode1)}
+                      className={`font-bold text-lg transition-colors cursor-pointer ${
+                        isHighlighted("КС1", isParent1) 
+                          ? "text-[#ffd700] animate-pulse" 
+                          : "text-[#ffd700] hover:text-[#ff69b4]"
+                      }`}
+                    >
+                      {result1.destinyCode1}
+                    </button>
+                  </div>
+                  <div 
+                    ref={el => { parentRefs.current["КС2"] = el; childRefs.current["КС2"] = el; }}
+                    className={`flex justify-between items-center p-2 rounded-lg transition-all ${
+                      isHighlighted("КС2", isParent1) 
+                        ? "bg-gradient-to-r from-[#ffd700]/30 to-[#ff69b4]/30 border border-[#ffd700]/50 shadow-lg shadow-[#ffd700]/20" 
+                        : "bg-white/5"
+                    }`}
+                  >
+                    <span className="text-[#e8d5f5] text-sm">КС2 (Код судьбы 2):</span>
+                    <button 
+                      onClick={() => onCodeClick?.(result1.destinyCode2)}
+                      className={`font-bold text-lg transition-colors cursor-pointer ${
+                        isHighlighted("КС2", isParent1) 
+                          ? "text-[#ffd700] animate-pulse" 
+                          : "text-[#ffd700] hover:text-[#ff69b4]"
+                      }`}
+                    >
+                      {result1.destinyCode2}
+                    </button>
+                  </div>
+                  <div className="border-t border-[#ffd700]/20 my-3"></div>
+                  <div 
+                    ref={el => { parentRefs.current["КЛК1"] = el; childRefs.current["КЛК1"] = el; }}
+                    className={`flex justify-between items-center p-2 rounded-lg transition-all ${
+                      isHighlighted("КЛК1", !isParent1) 
+                        ? "bg-gradient-to-r from-[#ff69b4]/30 to-[#ffd700]/30 border border-[#ff69b4]/50 shadow-lg shadow-[#ff69b4]/20" 
+                        : "bg-white/5"
+                    }`}
+                  >
+                    <span className="text-[#e8d5f5] text-sm">КЛК 1:</span>
+                    <button 
+                      onClick={() => onCodeClick?.(result1.karmaCode1)}
+                      className={`font-bold text-lg transition-colors cursor-pointer ${
+                        isHighlighted("КЛК1", !isParent1) 
+                          ? "text-[#ff69b4] animate-pulse" 
+                          : "text-[#ff69b4] hover:text-[#ffd700]"
+                      }`}
+                    >
+                      {result1.karmaCode1}
+                    </button>
+                  </div>
+                  <div 
+                    ref={el => { parentRefs.current["КЛК2"] = el; childRefs.current["КЛК2"] = el; }}
+                    className={`flex justify-between items-center p-2 rounded-lg transition-all ${
+                      isHighlighted("КЛК2", !isParent1) 
+                        ? "bg-gradient-to-r from-[#ff69b4]/30 to-[#ffd700]/30 border border-[#ff69b4]/50 shadow-lg shadow-[#ff69b4]/20" 
+                        : "bg-white/5"
+                    }`}
+                  >
+                    <span className="text-[#e8d5f5] text-sm">КЛК 2:</span>
+                    <button 
+                      onClick={() => onCodeClick?.(result1.karmaCode2)}
+                      className={`font-bold text-lg transition-colors cursor-pointer ${
+                        isHighlighted("КЛК2", !isParent1) 
+                          ? "text-[#ff69b4] animate-pulse" 
+                          : "text-[#ff69b4] hover:text-[#ffd700]"
+                      }`}
+                    >
+                      {result1.karmaCode2}
+                    </button>
+                  </div>
+                  <div 
+                    ref={el => { parentRefs.current["КЛК3"] = el; childRefs.current["КЛК3"] = el; }}
+                    className={`flex justify-between items-center p-2 rounded-lg transition-all ${
+                      isHighlighted("КЛК3", !isParent1) 
+                        ? "bg-gradient-to-r from-[#ff69b4]/30 to-[#ffd700]/30 border border-[#ff69b4]/50 shadow-lg shadow-[#ff69b4]/20" 
+                        : "bg-white/5"
+                    }`}
+                  >
+                    <span className="text-[#e8d5f5] text-sm">КЛК 3:</span>
+                    <button 
+                      onClick={() => onCodeClick?.(result1.karmaCode3)}
+                      className={`font-bold text-lg transition-colors cursor-pointer ${
+                        isHighlighted("КЛК3", !isParent1) 
+                          ? "text-[#ff69b4] animate-pulse" 
+                          : "text-[#ff69b4] hover:text-[#ffd700]"
+                      }`}
+                    >
+                      {result1.karmaCode3}
+                    </button>
+                  </div>
+                  <div 
+                    ref={el => { parentRefs.current["КЛК4"] = el; childRefs.current["КЛК4"] = el; }}
+                    className={`flex justify-between items-center p-2 rounded-lg transition-all ${
+                      isHighlighted("КЛК4", !isParent1) 
+                        ? "bg-gradient-to-r from-[#ff69b4]/30 to-[#ffd700]/30 border border-[#ff69b4]/50 shadow-lg shadow-[#ff69b4]/20" 
+                        : "bg-white/5"
+                    }`}
+                  >
+                    <span className="text-[#e8d5f5] text-sm">КЛК 4:</span>
+                    <button 
+                      onClick={() => onCodeClick?.(result1.karmaCode4)}
+                      className={`font-bold text-lg transition-colors cursor-pointer ${
+                        isHighlighted("КЛК4", !isParent1) 
+                          ? "text-[#ff69b4] animate-pulse" 
+                          : "text-[#ff69b4] hover:text-[#ffd700]"
+                      }`}
+                    >
+                      {result1.karmaCode4}
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div>
-                <KarmaTriangle
-                  data={{
-                    birthCode: result2.birthCode,
-                    destinyCode1: result2.destinyCode1,
-                    destinyCode2: result2.destinyCode2,
-                    karmaCode1: result2.karmaCode1,
-                    karmaCode2: result2.karmaCode2,
-                    karmaCode3: result2.karmaCode3,
-                    karmaCode4: result2.karmaCode4
-                  }}
-                  highlightedCodes={isParent1 ? childHighlighted : parentHighlighted}
-                  title={`${isParent1 ? "Ребёнок" : "Родитель"}: ${date2}`}
-                  onCodeClick={onCodeClick}
-                />
+
+              {/* Дата 2 */}
+              <div className="glass-card p-5 relative z-20">
+                <h3 className="text-center text-lg font-bold text-[#ffd700] mb-4">
+                  {isParent1 ? "Ребёнок" : "Родитель"}: {date2}
+                </h3>
+                <div className="space-y-2">
+                  <div 
+                    ref={el => { parentRefs.current["КР"] = el; childRefs.current["КР"] = el; }}
+                    className={`flex justify-between items-center p-2 rounded-lg transition-all ${
+                      isHighlighted("КР", !isParent1) 
+                        ? "bg-gradient-to-r from-[#ffd700]/30 to-[#ff69b4]/30 border border-[#ffd700]/50 shadow-lg shadow-[#ffd700]/20" 
+                        : "bg-white/5"
+                    }`}
+                  >
+                    <span className="text-[#e8d5f5] text-sm">КР (Код рождения):</span>
+                    <button 
+                      onClick={() => onCodeClick?.(result2.birthCode)}
+                      className={`font-bold text-lg transition-colors cursor-pointer ${
+                        isHighlighted("КР", !isParent1) 
+                          ? "text-[#ffd700] animate-pulse" 
+                          : "text-[#ffd700] hover:text-[#ff69b4]"
+                      }`}
+                    >
+                      {result2.birthCode}
+                    </button>
+                  </div>
+                  <div 
+                    ref={el => { parentRefs.current["КС1"] = el; childRefs.current["КС1"] = el; }}
+                    className={`flex justify-between items-center p-2 rounded-lg transition-all ${
+                      isHighlighted("КС1", !isParent1) 
+                        ? "bg-gradient-to-r from-[#ffd700]/30 to-[#ff69b4]/30 border border-[#ffd700]/50 shadow-lg shadow-[#ffd700]/20" 
+                        : "bg-white/5"
+                    }`}
+                  >
+                    <span className="text-[#e8d5f5] text-sm">КС1 (Код судьбы 1):</span>
+                    <button 
+                      onClick={() => onCodeClick?.(result2.destinyCode1)}
+                      className={`font-bold text-lg transition-colors cursor-pointer ${
+                        isHighlighted("КС1", !isParent1) 
+                          ? "text-[#ffd700] animate-pulse" 
+                          : "text-[#ffd700] hover:text-[#ff69b4]"
+                      }`}
+                    >
+                      {result2.destinyCode1}
+                    </button>
+                  </div>
+                  <div 
+                    ref={el => { parentRefs.current["КС2"] = el; childRefs.current["КС2"] = el; }}
+                    className={`flex justify-between items-center p-2 rounded-lg transition-all ${
+                      isHighlighted("КС2", !isParent1) 
+                        ? "bg-gradient-to-r from-[#ffd700]/30 to-[#ff69b4]/30 border border-[#ffd700]/50 shadow-lg shadow-[#ffd700]/20" 
+                        : "bg-white/5"
+                    }`}
+                  >
+                    <span className="text-[#e8d5f5] text-sm">КС2 (Код судьбы 2):</span>
+                    <button 
+                      onClick={() => onCodeClick?.(result2.destinyCode2)}
+                      className={`font-bold text-lg transition-colors cursor-pointer ${
+                        isHighlighted("КС2", !isParent1) 
+                          ? "text-[#ffd700] animate-pulse" 
+                          : "text-[#ffd700] hover:text-[#ff69b4]"
+                      }`}
+                    >
+                      {result2.destinyCode2}
+                    </button>
+                  </div>
+                  <div className="border-t border-[#ffd700]/20 my-3"></div>
+                  <div 
+                    ref={el => { parentRefs.current["КЛК1"] = el; childRefs.current["КЛК1"] = el; }}
+                    className={`flex justify-between items-center p-2 rounded-lg transition-all ${
+                      isHighlighted("КЛК1", isParent1) 
+                        ? "bg-gradient-to-r from-[#ff69b4]/30 to-[#ffd700]/30 border border-[#ff69b4]/50 shadow-lg shadow-[#ff69b4]/20" 
+                        : "bg-white/5"
+                    }`}
+                  >
+                    <span className="text-[#e8d5f5] text-sm">КЛК 1:</span>
+                    <button 
+                      onClick={() => onCodeClick?.(result2.karmaCode1)}
+                      className={`font-bold text-lg transition-colors cursor-pointer ${
+                        isHighlighted("КЛК1", isParent1) 
+                          ? "text-[#ff69b4] animate-pulse" 
+                          : "text-[#ff69b4] hover:text-[#ffd700]"
+                      }`}
+                    >
+                      {result2.karmaCode1}
+                    </button>
+                  </div>
+                  <div 
+                    ref={el => { parentRefs.current["КЛК2"] = el; childRefs.current["КЛК2"] = el; }}
+                    className={`flex justify-between items-center p-2 rounded-lg transition-all ${
+                      isHighlighted("КЛК2", isParent1) 
+                        ? "bg-gradient-to-r from-[#ff69b4]/30 to-[#ffd700]/30 border border-[#ff69b4]/50 shadow-lg shadow-[#ff69b4]/20" 
+                        : "bg-white/5"
+                    }`}
+                  >
+                    <span className="text-[#e8d5f5] text-sm">КЛК 2:</span>
+                    <button 
+                      onClick={() => onCodeClick?.(result2.karmaCode2)}
+                      className={`font-bold text-lg transition-colors cursor-pointer ${
+                        isHighlighted("КЛК2", isParent1) 
+                          ? "text-[#ff69b4] animate-pulse" 
+                          : "text-[#ff69b4] hover:text-[#ffd700]"
+                      }`}
+                    >
+                      {result2.karmaCode2}
+                    </button>
+                  </div>
+                  <div 
+                    ref={el => { parentRefs.current["КЛК3"] = el; childRefs.current["КЛК3"] = el; }}
+                    className={`flex justify-between items-center p-2 rounded-lg transition-all ${
+                      isHighlighted("КЛК3", isParent1) 
+                        ? "bg-gradient-to-r from-[#ff69b4]/30 to-[#ffd700]/30 border border-[#ff69b4]/50 shadow-lg shadow-[#ff69b4]/20" 
+                        : "bg-white/5"
+                    }`}
+                  >
+                    <span className="text-[#e8d5f5] text-sm">КЛК 3:</span>
+                    <button 
+                      onClick={() => onCodeClick?.(result2.karmaCode3)}
+                      className={`font-bold text-lg transition-colors cursor-pointer ${
+                        isHighlighted("КЛК3", isParent1) 
+                          ? "text-[#ff69b4] animate-pulse" 
+                          : "text-[#ff69b4] hover:text-[#ffd700]"
+                      }`}
+                    >
+                      {result2.karmaCode3}
+                    </button>
+                  </div>
+                  <div 
+                    ref={el => { parentRefs.current["КЛК4"] = el; childRefs.current["КЛК4"] = el; }}
+                    className={`flex justify-between items-center p-2 rounded-lg transition-all ${
+                      isHighlighted("КЛК4", isParent1) 
+                        ? "bg-gradient-to-r from-[#ff69b4]/30 to-[#ffd700]/30 border border-[#ff69b4]/50 shadow-lg shadow-[#ff69b4]/20" 
+                        : "bg-white/5"
+                    }`}
+                  >
+                    <span className="text-[#e8d5f5] text-sm">КЛК 4:</span>
+                    <button 
+                      onClick={() => onCodeClick?.(result2.karmaCode4)}
+                      className={`font-bold text-lg transition-colors cursor-pointer ${
+                        isHighlighted("КЛК4", isParent1) 
+                          ? "text-[#ff69b4] animate-pulse" 
+                          : "text-[#ff69b4] hover:text-[#ffd700]"
+                      }`}
+                    >
+                      {result2.karmaCode4}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -388,6 +699,22 @@ export default function KarmicConnectionPage({ onBack, onCodeClick }: KarmicConn
                 </p>
               </section>
             )}
+
+            {/* Кнопки перехода на другие калькуляторы */}
+            <div className="grid md:grid-cols-2 gap-4 mb-6">
+              <button
+                onClick={onGoToLesson}
+                className="py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/30"
+              >
+                📖 Узнать свой Урок года
+              </button>
+              <button
+                onClick={onBack}
+                className="py-4 rounded-xl bg-gradient-to-r from-[#ffd700] to-[#ff69b4] text-[#1a0a2e] font-bold text-base hover:opacity-90 transition-opacity shadow-lg shadow-yellow-500/30"
+              >
+                🔙 Вернуться к кодам
+              </button>
+            </div>
           </div>
         )}
 
