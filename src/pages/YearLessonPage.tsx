@@ -2,6 +2,7 @@ import { useState } from "react";
 import { yearLessons2026 } from "../data/yearLessons2026";
 import KarmaTriangle from "../components/KarmaTriangle";
 import CalendarModal from "../components/CalendarModal";
+import CodeImage from "../components/CodeImage";
 
 interface YearLessonPageProps {
   lessonCode: number;
@@ -91,7 +92,11 @@ export default function YearLessonPage({ lessonCode, onBack, onCodeClick }: Year
             <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2">
               <span className="text-2xl">✨</span> КОД {lessonCode} — {lessonData.title}
             </h3>
-            <p className="text-gray-700 font-medium mb-4">
+            
+            {/* Картинка для мобильных */}
+            <CodeImage code={lessonCode} title={lessonData.title} />
+            
+            <p className="text-gray-700 font-medium mb-4 text-base md:text-lg">
               Ваши кармические уроки на 2026 год:
             </p>
             
@@ -99,7 +104,7 @@ export default function YearLessonPage({ lessonCode, onBack, onCodeClick }: Year
               {lessonData.lessons.map((lesson, i) => (
                 <div key={i} className="flex items-start gap-3 bg-purple-50 p-4 rounded-xl border border-purple-200">
                   <span className="text-purple-600 text-xl flex-shrink-0">~</span>
-                  <p className="text-gray-800 text-sm md:text-base leading-relaxed">
+                  <p className="text-gray-800 text-base md:text-lg leading-relaxed">
                     {lesson}
                   </p>
                 </div>

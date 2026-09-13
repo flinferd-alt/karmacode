@@ -3,6 +3,7 @@ import { getKarmaData, KarmaCodeData } from "./data/karmaCodes";
 import YearLessonPage from "./pages/YearLessonPage";
 import KarmicConnectionPage from "./pages/KarmicConnectionPage";
 import KarmaTriangle from "./components/KarmaTriangle";
+import CodeImage from "./components/CodeImage";
 
 // ============================================
 // 📅 ДАТЫ ЭФИРОВ — МЕНЯТЬ ЗДЕСЬ
@@ -332,6 +333,9 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
           <p className="text-[#ff69b4] mt-2 text-sm font-medium">{data.subtitle}</p>
         </header>
 
+        {/* Картинка для мобильных */}
+        <CodeImage code={code} title={data.title} />
+
         {/* Треугольник с кодом */}
         <KarmaTriangle 
           data={getTriangleData()}
@@ -340,7 +344,7 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
 
         {/* Краткое описание */}
         <section className="glass-card p-5 mb-6 animate-fade-in-delay">
-          <p className="text-[#e8d5f5] leading-relaxed text-sm md:text-base">
+          <p className="text-[#e8d5f5] leading-relaxed text-base md:text-lg">
             {data.shortDesc}
           </p>
         </section>
@@ -360,7 +364,7 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
             {activeSection === 0 && (
               <ul className="mt-4 space-y-2">
                 {data.strengths.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-[#e8d5f5]">
+                  <li key={i} className="flex items-start gap-2 text-base md:text-lg text-[#e8d5f5]">
                     <span className="text-[#ffd700] mt-0.5">✦</span>
                     <span>{item}</span>
                   </li>
@@ -385,7 +389,7 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
             {activeSection === 1 && (
               <ul className="mt-4 space-y-2">
                 {data.challenges.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-[#e8d5f5]">
+                  <li key={i} className="flex items-start gap-2 text-base md:text-lg text-[#e8d5f5]">
                     <span className="text-[#ff69b4] mt-0.5">◆</span>
                     <span>{item}</span>
                   </li>
@@ -410,7 +414,7 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
             {activeSection === 2 && (
               <ul className="mt-4 space-y-2">
                 {data.karmaTasks.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-[#e8d5f5]">
+                  <li key={i} className="flex items-start gap-2 text-base md:text-lg text-[#e8d5f5]">
                     <span className="text-[#9b59b6] mt-0.5">{i + 1}.</span>
                     <span>{item}</span>
                   </li>
@@ -435,7 +439,7 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
             {activeSection === 3 && (
               <ul className="mt-4 space-y-2">
                 {data.lifeTests.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-[#e8d5f5]">
+                  <li key={i} className="flex items-start gap-2 text-base md:text-lg text-[#e8d5f5]">
                     <span className="text-[#ffd700] mt-0.5">•</span>
                     <span>{item}</span>
                   </li>
