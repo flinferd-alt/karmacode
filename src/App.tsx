@@ -156,37 +156,31 @@ function App() {
 
   // Главная страница
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1a0a2e] via-[#2d1b4e] to-[#1a0a2e] text-white relative overflow-hidden">
-      {/* Декоративные элементы */}
-      <div className="stars-bg" />
-      <div className="floating-orb orb-1" />
-      <div className="floating-orb orb-2" />
-      <div className="floating-orb orb-3" />
-
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-white text-gray-900 relative overflow-hidden">
       <div className="relative z-10 max-w-2xl mx-auto px-4 py-8">
         {/* Заголовок */}
         <header className="text-center mb-8 animate-fade-in">
           <div className="text-5xl mb-3">✨</div>
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#ffd700] via-[#ff69b4] to-[#9b59b6] bg-clip-text text-transparent">
+          <h1 className="text-3xl md:text-4xl font-bold text-purple-900">
             Коды Кармы
           </h1>
-          <p className="text-[#e8d5f5] mt-3 text-base md:text-lg leading-relaxed">
+          <p className="text-gray-700 mt-3 text-base md:text-lg leading-relaxed">
             Ваш персональный разбор энергий
           </p>
         </header>
 
         {/* Краткое описание системы */}
-        <section className="glass-card p-6 mb-8 animate-fade-in-delay">
-          <h2 className="text-xl font-semibold text-[#ffd700] mb-3 flex items-center gap-2">
+        <section className="bg-white rounded-2xl p-6 mb-8 shadow-lg border-2 border-purple-200 animate-fade-in-delay">
+          <h2 className="text-xl font-semibold text-purple-900 mb-3 flex items-center gap-2">
             <span>🔮</span> О системе
           </h2>
-          <p className="text-[#e8d5f5] leading-relaxed text-sm md:text-base">
+          <p className="text-gray-800 leading-relaxed text-sm md:text-base">
             Коды Кармы — это числовые вибрации, которые определяют вашу судьбу, 
             характер и жизненные задачи. Каждый код несёт свою уникальную энергию, 
             сильные стороны и кармические уроки.
           </p>
-          <p className="text-[#e8d5f5] leading-relaxed text-sm md:text-base mt-3">
-            Ниже представлены <strong className="text-[#ff69b4]">4 ключевых кода</strong> (КЛК), 
+          <p className="text-gray-800 leading-relaxed text-sm md:text-base mt-3">
+            Ниже представлены <strong className="text-pink-600">4 ключевых кода</strong> (КЛК), 
             рассчитанные по вашей дате рождения. Нажмите на любой код, чтобы узнать 
             его подробное описание, кармические задачи и рекомендации.
           </p>
@@ -195,7 +189,7 @@ function App() {
         {/* Кода клиента */}
         {hasCodes ? (
           <section className="mb-8 animate-fade-in-delay-2">
-            <h2 className="text-xl font-semibold text-center text-[#ffd700] mb-5">
+            <h2 className="text-xl font-semibold text-center text-purple-900 mb-5">
               Ваши коды
             </h2>
             <div className="grid grid-cols-2 gap-4">
@@ -208,7 +202,7 @@ function App() {
             {/* Кнопка "Узнать свой Урок года" */}
             <button
               onClick={handleGoToLesson}
-              className="mt-6 w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/30"
+              className="mt-6 w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg"
             >
               📖 Узнать свой Урок года
             </button>
@@ -216,53 +210,53 @@ function App() {
             {/* Кнопка "Калькулятор кармической связи" */}
             <button
               onClick={handleGoToCalculator}
-              className="mt-3 w-full py-4 rounded-xl bg-gradient-to-r from-[#ffd700] to-[#ff69b4] text-[#1a0a2e] font-bold text-base hover:opacity-90 transition-opacity shadow-lg shadow-yellow-500/30"
+              className="mt-3 w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 to-pink-500 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg"
             >
               🔗 Калькулятор кармической связи
             </button>
           </section>
         ) : (
-          <section className="glass-card p-6 mb-8 text-center animate-fade-in-delay">
-            <p className="text-[#e8d5f5] mb-2">
+          <section className="bg-white rounded-2xl p-6 mb-8 shadow-lg border-2 border-purple-200 text-center animate-fade-in-delay">
+            <p className="text-gray-800 mb-2">
               ✨ Демо-режим
             </p>
-            <p className="text-[#e8d5f5] text-sm">
+            <p className="text-gray-600 text-sm">
               Для получения персонального разбора перейдите по ссылке из сообщения ВКонтакте.
             </p>
           </section>
         )}
 
         {/* Блок с эфирами */}
-        <section className="glass-card p-6 mb-8 animate-fade-in-delay-2">
-          <h2 className="text-xl font-semibold text-[#ffd700] mb-4 flex items-center gap-2">
+        <section className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 mb-8 shadow-lg border-2 border-purple-200 animate-fade-in-delay-2">
+          <h2 className="text-xl font-semibold text-purple-900 mb-4 flex items-center gap-2">
             <span>📅</span> Ближайшие эфиры
           </h2>
-          <p className="text-[#e8d5f5] text-sm mb-4">
+          <p className="text-gray-700 text-sm mb-4">
             Приходите на бесплатные эфиры, где я подробно разберу ваши коды и дам персональные рекомендации:
           </p>
           <div className="space-y-3">
             {EVENT_DATES.map((event, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-[#ffd700]/20">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ffd700] to-[#ff69b4] flex items-center justify-center text-lg font-bold text-[#1a0a2e] shrink-0">
+              <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white border border-purple-200">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-lg font-bold text-white shrink-0">
                   {i + 1}
                 </div>
                 <div>
-                  <div className="font-semibold text-[#ffd700]">{event.date}</div>
-                  <div className="text-xs text-[#e8d5f5]">{event.time} • {event.topic}</div>
+                  <div className="font-semibold text-purple-900">{event.date}</div>
+                  <div className="text-xs text-gray-600">{event.time} • {event.topic}</div>
                 </div>
               </div>
             ))}
           </div>
           <button
             onClick={() => setShowEvents(true)}
-            className="mt-5 w-full py-3 rounded-xl bg-gradient-to-r from-[#ffd700] to-[#ff69b4] text-[#1a0a2e] font-bold text-base hover:opacity-90 transition-opacity"
+            className="mt-5 w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg"
           >
             Записаться на эфир ✨
           </button>
         </section>
 
         {/* Футер */}
-        <footer className="text-center text-[#e8d5f5]/60 text-xs pb-6">
+        <footer className="text-center text-gray-500 text-xs pb-6">
           <p>✨ Персональный разбор кодов кармы ✨</p>
         </footer>
       </div>
@@ -281,13 +275,12 @@ function CodeButton({ code, label, onClick }: { code: string; label: string; onC
   return (
     <button
       onClick={onClick}
-      className="code-button group relative p-5 rounded-2xl bg-gradient-to-br from-[#2d1b4e]/80 to-[#1a0a2e]/80 border border-[#ffd700]/30 hover:border-[#ffd700]/70 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(255,215,0,0.3)]"
+      className="code-button group relative p-5 rounded-2xl bg-white border-2 border-purple-300 hover:border-purple-500 transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg"
     >
       <div className="text-3xl mb-2">{data.symbol}</div>
-      <div className="text-xs text-[#e8d5f5]/70 mb-1">{label}</div>
-      <div className="text-2xl font-bold text-[#ffd700]">{code}</div>
-      <div className="text-xs text-[#ff69b4] mt-1 font-medium">{data.title}</div>
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#ffd700]/0 via-[#ffd700]/5 to-[#ffd700]/0 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="text-xs text-gray-600 mb-1">{label}</div>
+      <div className="text-2xl font-bold text-purple-900">{code}</div>
+      <div className="text-xs text-pink-600 mt-1 font-medium">{data.title}</div>
     </button>
   );
 }
@@ -317,20 +310,16 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1a0a2e] via-[#2d1b4e] to-[#1a0a2e] text-white relative overflow-hidden">
-      <div className="stars-bg" />
-      <div className="floating-orb orb-1" />
-      <div className="floating-orb orb-2" />
-
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-white text-gray-900 relative overflow-hidden">
       <div className="relative z-10 max-w-2xl mx-auto px-4 py-6">
         {/* Заголовок кода */}
         <header className="text-center mb-8 animate-fade-in">
-          <div className="text-6xl mb-3 animate-pulse-slow">{data.symbol}</div>
-          <div className="text-sm text-[#e8d5f5]/70 mb-1">Код {code}</div>
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#ffd700] via-[#ff69b4] to-[#9b59b6] bg-clip-text text-transparent">
+          <div className="text-6xl mb-3">{data.symbol}</div>
+          <div className="text-sm text-gray-600 mb-1">Код {code}</div>
+          <h1 className="text-3xl md:text-4xl font-bold text-purple-900">
             {data.title}
           </h1>
-          <p className="text-[#ff69b4] mt-2 text-sm font-medium">{data.subtitle}</p>
+          <p className="text-pink-600 mt-2 text-sm font-medium">{data.subtitle}</p>
         </header>
 
         {/* Картинка для мобильных - после заголовка */}
@@ -348,20 +337,20 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
         <div className="code-content-with-image">
           <div className="code-text">
             {/* Краткое описание */}
-            <section className="glass-card p-5 mb-6 animate-fade-in-delay">
-              <p className="text-[#e8d5f5] leading-relaxed text-base md:text-lg">
+            <section className="bg-white rounded-2xl p-5 mb-6 shadow-lg border-2 border-purple-200 animate-fade-in-delay">
+              <p className="text-gray-800 leading-relaxed text-base md:text-lg">
                 {data.shortDesc}
               </p>
             </section>
 
         {/* Полное описание кода */}
         {data.fullDescription.length > 0 && (
-          <section className="glass-card p-5 mb-4 animate-fade-in-delay">
+          <section className="bg-white rounded-2xl p-5 mb-4 shadow-lg border-2 border-purple-200 animate-fade-in-delay">
             <button
               onClick={() => setActiveSection(activeSection === 0 ? null : 0)}
               className="w-full flex items-center justify-between text-left"
             >
-              <h2 className="text-lg font-semibold text-[#ffd700] flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-purple-900 flex items-center gap-2">
                 <span>📖</span> Подробное описание
               </h2>
               <span className={`text-[#ffd700] transition-transform ${activeSection === 0 ? "rotate-180" : ""}`}>▼</span>
@@ -369,7 +358,7 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
             {activeSection === 0 && (
               <div className="mt-4 space-y-4">
                 {data.fullDescription.map((paragraph, i) => (
-                  <p key={i} className="text-base md:text-lg text-[#e8d5f5] leading-relaxed">
+                  <p key={i} className="text-base md:text-lg text-gray-800 leading-relaxed">
                     {paragraph}
                   </p>
                 ))}
@@ -380,21 +369,21 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
 
         {/* Кармические задачи */}
         {data.karmaTasks.length > 0 && (
-          <section className="glass-card p-5 mb-4 animate-fade-in-delay-2">
+          <section className="bg-white rounded-2xl p-5 mb-4 shadow-lg border-2 border-purple-200 animate-fade-in-delay-2">
             <button
               onClick={() => setActiveSection(activeSection === 1 ? null : 1)}
               className="w-full flex items-center justify-between text-left"
             >
-              <h2 className="text-lg font-semibold text-[#9b59b6] flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-purple-700 flex items-center gap-2">
                 <span>🎯</span> Кармические задачи
               </h2>
-              <span className={`text-[#9b59b6] transition-transform ${activeSection === 1 ? "rotate-180" : ""}`}>▼</span>
+              <span className={`text-purple-700 transition-transform ${activeSection === 1 ? "rotate-180" : ""}`}>▼</span>
             </button>
             {activeSection === 1 && (
               <ul className="mt-4 space-y-2">
                 {data.karmaTasks.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-base md:text-lg text-[#e8d5f5]">
-                    <span className="text-[#9b59b6] mt-0.5">{i + 1}.</span>
+                  <li key={i} className="flex items-start gap-2 text-base md:text-lg text-gray-800">
+                    <span className="text-purple-700 mt-0.5">{i + 1}.</span>
                     <span>{item}</span>
                   </li>
                 ))}
@@ -405,11 +394,11 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
 
         {/* Примечание про эфиры */}
         {data.hasLiveEventNote && (
-          <section className="glass-card p-5 mb-4 animate-fade-in-delay-2 border-2 border-[#ffd700]/30">
+          <section className="bg-gradient-to-r from-amber-50 to-pink-50 rounded-2xl p-5 mb-4 shadow-lg border-2 border-amber-300 animate-fade-in-delay-2">
             <div className="flex items-start gap-3">
               <span className="text-2xl">📅</span>
-              <p className="text-base md:text-lg text-[#e8d5f5] leading-relaxed">
-                <span className="text-[#ffd700] font-semibold">Подробно разберём на эфирах 20, 21 и 23 сентября.</span>
+              <p className="text-base md:text-lg text-gray-800 leading-relaxed">
+                <span className="text-amber-700 font-semibold">Подробно разберём на эфирах 20, 21 и 23 сентября.</span>
               </p>
             </div>
           </section>
@@ -417,8 +406,8 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
 
         {/* Гендерная заметка */}
         {data.genderNote && (
-          <section className="glass-card p-5 mb-4 border-[#ff69b4]/30 animate-fade-in-delay-2">
-            <p className="text-sm text-[#ff69b4] flex items-start gap-2">
+          <section className="bg-pink-50 rounded-2xl p-5 mb-4 border-2 border-pink-300 animate-fade-in-delay-2">
+            <p className="text-sm text-pink-700 flex items-start gap-2">
               <span>💡</span>
               <span>{data.genderNote}</span>
             </p>
@@ -427,9 +416,9 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
 
         {/* Аффирмация */}
         {data.affirmation && (
-          <section className="glass-card p-6 mb-6 text-center bg-gradient-to-br from-[#ffd700]/10 to-[#ff69b4]/10 border-[#ffd700]/30 animate-fade-in-delay-2">
+          <section className="bg-gradient-to-br from-amber-50 to-pink-50 rounded-2xl p-6 mb-6 text-center border-2 border-amber-300 shadow-lg animate-fade-in-delay-2">
             <div className="text-2xl mb-2">🌟</div>
-            <p className="text-[#ffd700] italic text-sm md:text-base leading-relaxed">
+            <p className="text-amber-800 italic text-sm md:text-base leading-relaxed">
               «{data.affirmation}»
             </p>
           </section>
@@ -443,23 +432,23 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
         </div>
 
         {/* CTA — запись на эфир */}
-        <section className="glass-card p-6 mb-6 text-center border-[#ffd700]/30 animate-fade-in-delay-2">
-          <h3 className="text-lg font-semibold text-[#ffd700] mb-2">
+        <section className="bg-white rounded-2xl p-6 mb-6 text-center border-2 border-purple-300 shadow-lg animate-fade-in-delay-2">
+          <h3 className="text-lg font-semibold text-purple-900 mb-2">
             Хотите полный разбор?
           </h3>
-          <p className="text-[#e8d5f5] text-sm mb-4">
+          <p className="text-gray-700 text-sm mb-4">
             Приходите на бесплатный эфир, где я подробно разберу все ваши коды и дам персональные рекомендации.
           </p>
           <div className="space-y-2 mb-4">
             {EVENT_DATES.map((event, i) => (
-              <div key={i} className="text-xs text-[#e8d5f5]">
-                📅 <strong className="text-[#ffd700]">{event.date}</strong> в {event.time}
+              <div key={i} className="text-xs text-gray-700">
+                📅 <strong className="text-purple-900">{event.date}</strong> в {event.time}
               </div>
             ))}
           </div>
           <button
             onClick={() => setShowEvents(true)}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-[#ffd700] to-[#ff69b4] text-[#1a0a2e] font-bold text-base hover:opacity-90 transition-opacity"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg"
           >
             Записаться на эфир ✨
           </button>
@@ -473,13 +462,13 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
         {/* Кнопка назад внизу */}
         <button
           onClick={onBack}
-          className="w-full py-3 rounded-xl border border-[#ffd700]/30 text-[#ffd700] font-medium text-sm hover:bg-[#ffd700]/10 transition-colors mb-6"
+          className="w-full py-3 rounded-xl border-2 border-purple-300 text-purple-700 font-medium text-sm hover:bg-purple-50 transition-colors mb-6"
         >
           ← Вернуться к кодам
         </button>
 
         {/* Футер */}
-        <footer className="text-center text-[#e8d5f5]/60 text-xs pb-6">
+        <footer className="text-center text-gray-500 text-xs pb-6">
           <p>✨ Персональный разбор кодов кармы ✨</p>
         </footer>
       </div>

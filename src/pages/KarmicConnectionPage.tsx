@@ -226,16 +226,12 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1a0a2e] via-[#2d1b4e] to-[#1a0a2e] text-white relative overflow-hidden">
-      <div className="stars-bg" />
-      <div className="floating-orb orb-1" />
-      <div className="floating-orb orb-2" />
-
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-white text-gray-900 relative overflow-hidden">
       <div className="relative z-10 max-w-4xl mx-auto px-4 py-6">
         {/* Кнопка назад */}
         <button
           onClick={onBack}
-          className="flex items-center gap-2 text-[#ffd700] mb-6 hover:opacity-80 transition-opacity"
+          className="flex items-center gap-2 text-purple-700 mb-6 hover:text-purple-900 transition-colors"
         >
           <span>←</span>
           <span className="text-sm">Назад</span>
@@ -244,23 +240,23 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
         {/* Заголовок */}
         <header className="text-center mb-8 animate-fade-in">
           <div className="text-6xl mb-3">🔗</div>
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#ffd700] via-[#ff69b4] to-[#9b59b6] bg-clip-text text-transparent">
+          <h1 className="text-3xl md:text-4xl font-bold text-purple-900">
             Калькулятор Кармической Связи
           </h1>
-          <p className="text-[#e8d5f5] mt-3 text-base">
+          <p className="text-gray-700 mt-3 text-base">
             Проверьте кармическую связь между двумя людьми
           </p>
         </header>
 
         {/* Видео-заглушка */}
-        <section className="glass-card p-6 mb-6 animate-fade-in-delay">
-          <div className="aspect-video bg-gradient-to-br from-purple-900/50 to-pink-900/30 rounded-xl flex items-center justify-center border border-[#ffd700]/20">
+        <section className="bg-white rounded-2xl p-6 mb-6 shadow-lg border-2 border-purple-200 animate-fade-in-delay">
+          <div className="aspect-video bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center border-2 border-purple-300">
             <div className="text-center p-6">
               <div className="text-5xl mb-3">🎥</div>
-              <p className="text-[#e8d5f5] text-sm">
+              <p className="text-gray-800 text-sm">
                 Здесь будет видео-пояснение,<br/>как проверить кармическую связь
               </p>
-              <p className="text-[#ffd700] text-xs mt-2 italic">
+              <p className="text-purple-700 text-xs mt-2 italic">
                 (Kinescope или другой видео-хостинг)
               </p>
             </div>
@@ -268,14 +264,14 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
         </section>
 
         {/* Форма ввода */}
-        <section className="glass-card p-6 mb-6 animate-fade-in-delay">
-          <h2 className="text-xl font-bold text-[#ffd700] mb-4 text-center">
+        <section className="bg-white rounded-2xl p-6 mb-6 shadow-lg border-2 border-purple-200 animate-fade-in-delay">
+          <h2 className="text-xl font-bold text-purple-900 mb-4 text-center">
             Введите даты рождения
           </h2>
           
           <div className="grid md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-[#e8d5f5] text-sm mb-2">Дата 1</label>
+              <label className="block text-gray-700 text-sm mb-2">Дата 1</label>
               <input
                 type="text"
                 value={date1}
@@ -291,12 +287,12 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                   setDate1(formatted);
                 }}
                 placeholder="дд.мм.гггг"
-                className="w-full px-4 py-3 rounded-xl bg-purple-900/40 backdrop-blur-md border border-purple-500/30 text-white placeholder-purple-400/40 focus:outline-none focus:border-purple-400/60 focus:ring-2 focus:ring-purple-500/20 text-center text-lg tracking-wider"
+                className="w-full px-4 py-3 rounded-xl bg-purple-50 border-2 border-purple-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 text-center text-lg tracking-wider"
                 maxLength={10}
               />
             </div>
             <div>
-              <label className="block text-[#e8d5f5] text-sm mb-2">Дата 2</label>
+              <label className="block text-gray-700 text-sm mb-2">Дата 2</label>
               <input
                 type="text"
                 value={date2}
@@ -312,19 +308,19 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                   setDate2(formatted);
                 }}
                 placeholder="дд.мм.гггг"
-                className="w-full px-4 py-3 rounded-xl bg-purple-900/40 backdrop-blur-md border border-purple-500/30 text-white placeholder-purple-400/40 focus:outline-none focus:border-purple-400/60 focus:ring-2 focus:ring-purple-500/20 text-center text-lg tracking-wider"
+                className="w-full px-4 py-3 rounded-xl bg-purple-50 border-2 border-purple-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 text-center text-lg tracking-wider"
                 maxLength={10}
               />
             </div>
           </div>
 
           {error && (
-            <p className="text-red-400 text-sm text-center mb-4">{error}</p>
+            <p className="text-red-600 text-sm text-center mb-4">{error}</p>
           )}
 
           <button
             onClick={handleCalculate}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-[#ffd700] to-[#ff69b4] text-[#1a0a2e] font-bold text-base hover:opacity-90 transition-opacity"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg"
           >
             Рассчитать кармическую связь ✨
           </button>
@@ -334,12 +330,12 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
         {result1 && result2 && (
           <div className="animate-fade-in">
             {/* Информация о родителе */}
-            <div className="glass-card p-4 mb-6 border-[#ffd700]/30">
-              <p className="text-center text-[#e8d5f5] text-sm">
-                <span className="text-[#ffd700] font-bold">Родитель:</span> {isParent1 ? date1 : date2} (более ранняя дата)
+            <div className="bg-gradient-to-r from-amber-50 to-pink-50 rounded-2xl p-4 mb-6 border-2 border-amber-300 shadow-lg">
+              <p className="text-center text-gray-800 text-sm">
+                <span className="text-amber-700 font-bold">Родитель:</span> {isParent1 ? date1 : date2} (более ранняя дата)
               </p>
-              <p className="text-center text-[#e8d5f5] text-sm mt-1">
-                <span className="text-[#ff69b4] font-bold">Ребёнок:</span> {isParent1 ? date2 : date1}
+              <p className="text-center text-gray-800 text-sm mt-1">
+                <span className="text-pink-600 font-bold">Ребёнок:</span> {isParent1 ? date2 : date1}
               </p>
             </div>
 
@@ -397,8 +393,8 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
               )}
 
               {/* Дата 1 */}
-              <div className="glass-card p-5 relative z-20">
-                <h3 className="text-center text-lg font-bold text-[#ffd700] mb-4">
+              <div className="bg-white rounded-2xl p-5 shadow-lg border-2 border-purple-200 relative z-20">
+                <h3 className="text-center text-lg font-bold text-purple-900 mb-4">
                   {isParent1 ? "Родитель" : "Ребёнок"}: {date1}
                 </h3>
                 <div className="space-y-2">
@@ -406,17 +402,17 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     ref={el => { if (isParent1) parentRefs.current["КР"] = el; else childRefs.current["КР"] = el; }}
                     className={`flex justify-between items-center p-2 rounded-lg transition-all ${
                       isHighlighted("КР", isParent1) 
-                        ? "bg-gradient-to-r from-[#ffd700]/30 to-[#ff69b4]/30 border border-[#ffd700]/50 shadow-lg shadow-[#ffd700]/20" 
-                        : "bg-white/5"
+                        ? "bg-gradient-to-r from-amber-100 to-pink-100 border-2 border-amber-400 shadow-lg" 
+                        : "bg-purple-50"
                     }`}
                   >
-                    <span className="text-[#e8d5f5] text-sm">КР (Код рождения):</span>
+                    <span className="text-gray-800 text-sm">КР (Код рождения):</span>
                     <button 
                       onClick={() => onCodeClick?.(result1.birthCode)}
                       className={`font-bold text-lg transition-colors cursor-pointer ${
                         isHighlighted("КР", isParent1) 
-                          ? "text-[#ffd700] animate-pulse" 
-                          : "text-[#ffd700] hover:text-[#ff69b4]"
+                          ? "text-amber-700 animate-pulse" 
+                          : "text-purple-700 hover:text-pink-600"
                       }`}
                     >
                       {result1.birthCode}
@@ -426,11 +422,11 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
                     ref={el => { if (isParent1) parentRefs.current["КС1"] = el; else childRefs.current["КС1"] = el; }}
                     className={`flex justify-between items-center p-2 rounded-lg transition-all ${
                       isHighlighted("КС1", isParent1) 
-                        ? "bg-gradient-to-r from-[#ffd700]/30 to-[#ff69b4]/30 border border-[#ffd700]/50 shadow-lg shadow-[#ffd700]/20" 
-                        : "bg-white/5"
+                        ? "bg-gradient-to-r from-amber-100 to-pink-100 border-2 border-amber-400 shadow-lg" 
+                        : "bg-purple-50"
                     }`}
                   >
-                    <span className="text-[#e8d5f5] text-sm">КС1 (Код судьбы 1):</span>
+                    <span className="text-gray-800 text-sm">КС1 (Код судьбы 1):</span>
                     <button 
                       onClick={() => onCodeClick?.(result1.destinyCode1)}
                       className={`font-bold text-lg transition-colors cursor-pointer ${
