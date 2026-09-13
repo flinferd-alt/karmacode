@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { getKarmaData } from "../data/karmaCodes";
+import KarmaTriangle from "../components/KarmaTriangle";
 
 interface KarmicConnectionPageProps {
   onBack: () => void;
