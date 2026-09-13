@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { yearLessons2026 } from "../data/yearLessons2026";
 import KarmaTriangle from "../components/KarmaTriangle";
+import CalendarModal from "../components/CalendarModal";
 
 interface YearLessonPageProps {
   lessonCode: number;
@@ -50,6 +51,7 @@ const SIGNS_TEXT = [
 export default function YearLessonPage({ lessonCode, onBack, onCodeClick }: YearLessonPageProps) {
   const [expandedSign, setExpandedSign] = useState<number | null>(null);
   const [showAllSigns, setShowAllSigns] = useState(false);
+  const [showEvents, setShowEvents] = useState(false);
 
   const lessonData = yearLessons2026[lessonCode];
 
@@ -231,6 +233,12 @@ export default function YearLessonPage({ lessonCode, onBack, onCodeClick }: Year
               </div>
             </div>
           </div>
+          <button
+            onClick={() => setShowEvents(true)}
+            className="mt-5 w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg"
+          >
+            Записаться на эфир ✨
+          </button>
         </section>
 
         {/* Футер */}
@@ -238,6 +246,11 @@ export default function YearLessonPage({ lessonCode, onBack, onCodeClick }: Year
           <p>✨ Коды Кармы ✨</p>
         </footer>
       </div>
+
+      {/* Модалка выбора календаря */}
+      {showEvents && (
+        <CalendarModal onClose={() => setShowEvents(false)} />
+      )}
     </div>
   );
 }
