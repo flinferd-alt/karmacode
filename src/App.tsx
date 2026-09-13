@@ -333,8 +333,10 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
           <p className="text-[#ff69b4] mt-2 text-sm font-medium">{data.subtitle}</p>
         </header>
 
-        {/* Картинка для мобильных */}
-        <CodeImage code={code} title={data.title} />
+        {/* Картинка для мобильных - после заголовка */}
+        <div className="md:hidden mb-6">
+          <CodeImage code={code} title={data.title} />
+        </div>
 
         {/* Треугольник с кодом */}
         <KarmaTriangle 
@@ -342,12 +344,15 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
           title={trianglePosition === "yearLesson" ? "Ваш урок года" : "Ваш код кармы"}
         />
 
-        {/* Краткое описание */}
-        <section className="glass-card p-5 mb-6 animate-fade-in-delay">
-          <p className="text-[#e8d5f5] leading-relaxed text-base md:text-lg">
-            {data.shortDesc}
-          </p>
-        </section>
+        {/* Контент с картинкой */}
+        <div className="code-content-with-image">
+          <div className="code-text">
+            {/* Краткое описание */}
+            <section className="glass-card p-5 mb-6 animate-fade-in-delay">
+              <p className="text-[#e8d5f5] leading-relaxed text-base md:text-lg">
+                {data.shortDesc}
+              </p>
+            </section>
 
         {/* Сильные стороны */}
         {data.strengths.length > 0 && (
@@ -468,6 +473,13 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
             </p>
           </section>
         )}
+          </div>
+          
+          {/* Картинка справа на десктопе */}
+          <div className="code-image-container">
+            <CodeImage code={code} title={data.title} />
+          </div>
+        </div>
 
         {/* CTA — запись на эфир */}
         <section className="glass-card p-6 mb-6 text-center border-[#ffd700]/30 animate-fade-in-delay-2">

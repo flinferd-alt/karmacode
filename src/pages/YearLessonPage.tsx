@@ -75,6 +75,11 @@ export default function YearLessonPage({ lessonCode, onBack, onCodeClick }: Year
           </h1>
         </header>
 
+        {/* Картинка для мобильных - после заголовка */}
+        <div className="md:hidden mb-6">
+          <CodeImage code={lessonCode} title={lessonData.title} />
+        </div>
+
         {/* Треугольник */}
         <KarmaTriangle 
           data={{ yearLesson: lessonCode }}
@@ -88,36 +93,40 @@ export default function YearLessonPage({ lessonCode, onBack, onCodeClick }: Year
             КАРМИЧЕСКИЕ УРОКИ 2026 ГОДА
           </h2>
           
-          <div className="mb-6">
-            <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2">
-              <span className="text-2xl">✨</span> КОД {lessonCode} — {lessonData.title}
-            </h3>
-            
-            {/* Картинка для мобильных */}
-            <CodeImage code={lessonCode} title={lessonData.title} />
-            
-            <p className="text-gray-700 font-medium mb-4 text-base md:text-lg">
-              Ваши кармические уроки на 2026 год:
-            </p>
-            
-            <div className="space-y-3">
-              {lessonData.lessons.map((lesson, i) => (
-                <div key={i} className="flex items-start gap-3 bg-purple-50 p-4 rounded-xl border border-purple-200">
-                  <span className="text-purple-600 text-xl flex-shrink-0">~</span>
-                  <p className="text-gray-800 text-base md:text-lg leading-relaxed">
-                    {lesson}
+          <div className="code-content-with-image">
+            <div className="code-text">
+              <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2">
+                <span className="text-2xl">✨</span> КОД {lessonCode} — {lessonData.title}
+              </h3>
+              
+              <p className="text-gray-700 font-medium mb-4 text-base md:text-lg">
+                Ваши кармические уроки на 2026 год:
+              </p>
+              
+              <div className="space-y-3">
+                {lessonData.lessons.map((lesson, i) => (
+                  <div key={i} className="flex items-start gap-3 bg-purple-50 p-4 rounded-xl border border-purple-200">
+                    <span className="text-purple-600 text-xl flex-shrink-0">~</span>
+                    <p className="text-gray-800 text-base md:text-lg leading-relaxed">
+                      {lesson}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              {lessonData.summary && (
+                <div className="mt-6 bg-gradient-to-r from-pink-50 to-purple-50 p-4 rounded-xl border-2 border-pink-300">
+                  <p className="text-gray-800 text-sm md:text-base leading-relaxed italic">
+                    {lessonData.summary}
                   </p>
                 </div>
-              ))}
+              )}
             </div>
-
-            {lessonData.summary && (
-              <div className="mt-6 bg-gradient-to-r from-pink-50 to-purple-50 p-4 rounded-xl border-2 border-pink-300">
-                <p className="text-gray-800 text-sm md:text-base leading-relaxed italic">
-                  {lessonData.summary}
-                </p>
-              </div>
-            )}
+            
+            {/* Картинка справа на десктопе */}
+            <div className="code-image-container">
+              <CodeImage code={lessonCode} title={lessonData.title} />
+            </div>
           </div>
         </section>
 

@@ -41,6 +41,54 @@ body {
   }
 }
 
+/* Адаптивные картинки для кодов */
+.code-image-container {
+  margin: 1.5rem 0;
+}
+
+.code-image {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* На десктопе - картинка справа от текста */
+@media (min-width: 769px) {
+  .code-content-with-image {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+  }
+  
+  .code-content-with-image .code-text {
+    flex: 1;
+  }
+  
+  .code-content-with-image .code-image-container {
+    flex: 0 0 300px;
+    margin: 0;
+    position: sticky;
+    top: 2rem;
+  }
+  
+  .code-content-with-image .code-image {
+    max-width: 300px;
+  }
+}
+
+/* На мобильных - картинка после заголовка перед текстом */
+@media (max-width: 768px) {
+  .code-content-with-image {
+    display: block;
+  }
+  
+  .code-content-with-image .code-image-container {
+    display: none;
+  }
+}
+
 /* Стеклянная карточка */
 .glass-card {
   background: rgba(45, 27, 78, 0.6);

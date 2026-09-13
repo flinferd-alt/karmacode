@@ -14,7 +14,7 @@ export interface TriangleData {
 }
 
 interface KarmaTriangleProps {
-   TriangleData;
+  data: TriangleData;
   highlightedCodes?: number[];
   title?: string;
   onCodeClick?: (code: number) => void;
