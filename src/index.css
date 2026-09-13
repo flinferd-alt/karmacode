@@ -30,10 +30,14 @@ body {
     font-size: 16px;
   }
   
-  .glass-card p,
-  .glass-card li,
-  .glass-card span {
-    font-size: calc(1rem + 2px);
+  /* Увеличение основного текста на 2px для всех страниц */
+  p, li, span, div {
+    font-size: calc(1rem + 2px) !important;
+  }
+  
+  /* Исключения для заголовков и кнопок */
+  h1, h2, h3, h4, h5, h6, button, .text-xs, .text-sm {
+    font-size: inherit !important;
   }
 }
 
