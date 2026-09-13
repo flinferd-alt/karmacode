@@ -24,6 +24,19 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Увеличение шрифта на мобильных устройствах */
+@media (max-width: 768px) {
+  body {
+    font-size: 16px;
+  }
+  
+  .glass-card p,
+  .glass-card li,
+  .glass-card span {
+    font-size: calc(1rem + 2px);
+  }
+}
+
 /* Стеклянная карточка */
 .glass-card {
   background: rgba(45, 27, 78, 0.6);
