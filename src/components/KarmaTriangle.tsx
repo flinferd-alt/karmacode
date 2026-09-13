@@ -33,15 +33,17 @@ function KarmaCircle({ value, x, y, size, highlighted, onClick }: CircleProps) {
   const hasValue = value !== null && value !== undefined;
   const isClickable = hasValue && onClick;
 
+  const borderSize = 2;
+
   return (
     <div
       className={`absolute flex items-center justify-center rounded-full font-bold transition-all duration-300 ${
         hasValue
           ? highlighted
-            ? "bg-gradient-to-br from-yellow-400 via-amber-400 to-yellow-500 text-purple-900 shadow-2xl shadow-yellow-400/60 animate-pulse-slow ring-4 ring-yellow-300/50"
-            : "bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500 text-white shadow-xl hover:shadow-2xl hover:scale-105"
+            ? "bg-gradient-to-br from-yellow-400 via-amber-400 to-yellow-500 text-purple-900 animate-pulse-slow"
+            : "bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500 text-white hover:scale-105"
           : "bg-gray-300 text-gray-500"
-      } ${isClickable ? "cursor-pointer hover:ring-4 hover:ring-purple-300/50" : ""}`}
+      } ${isClickable ? "cursor-pointer" : ""}`}
       style={{
         left: `${x}%`,
         top: `${y}%`,
@@ -49,6 +51,15 @@ function KarmaCircle({ value, x, y, size, highlighted, onClick }: CircleProps) {
         height: `${size}px`,
         transform: "translate(-50%, -50%)",
         fontSize: `${size * 0.4}px`,
+        // Бортики
+        boxShadow: hasValue
+          ? highlighted
+            ? // Активный кружок - бортик внутри с градиентом и свечением
+              `inset 0 0 0 ${borderSize}px #9d0842, 0 0 15px #e42872, 0 0 30px #e42872`
+            : // Неактивный кружок - бортик снаружи, дизайнерский чёрный
+              `0 0 0 ${borderSize}px rgba(30, 30, 40, 0.7), 0 4px 12px rgba(0, 0, 0, 0.3)`
+          : // Пустой кружок
+            `0 0 0 ${borderSize}px rgba(30, 30, 40, 0.5)`,
       }}
       onClick={onClick}
     >
@@ -69,7 +80,7 @@ export default function KarmaTriangle({ data, highlightedCodes = [], title, onCo
 
   // Координаты центров кругов (в процентах от изображения 1341x1173)
   const positions = {
-    moneyCode: { x: (669 / 1341) * 100, y: (390 / 1173) * 100 },
+    moneyCode: { x: (669 / 1341) * 100, y: (388 / 1173) * 100 }, // Смещён на 2px вверх
     yearLesson: { x: (533 / 1341) * 100, y: (585 / 1173) * 100 },
     yearResource: { x: (806 / 1341) * 100, y: (585 / 1173) * 100 },
     karmaCode1: { x: (375 / 1341) * 100, y: (774 / 1173) * 100 },
