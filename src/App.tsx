@@ -354,52 +354,26 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
               </p>
             </section>
 
-        {/* Сильные стороны */}
-        {data.strengths.length > 0 && (
+        {/* Полное описание кода */}
+        {data.fullDescription.length > 0 && (
           <section className="glass-card p-5 mb-4 animate-fade-in-delay">
             <button
               onClick={() => setActiveSection(activeSection === 0 ? null : 0)}
               className="w-full flex items-center justify-between text-left"
             >
               <h2 className="text-lg font-semibold text-[#ffd700] flex items-center gap-2">
-                <span>💫</span> Ваши сильные стороны
+                <span>📖</span> Подробное описание
               </h2>
               <span className={`text-[#ffd700] transition-transform ${activeSection === 0 ? "rotate-180" : ""}`}>▼</span>
             </button>
             {activeSection === 0 && (
-              <ul className="mt-4 space-y-2">
-                {data.strengths.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-base md:text-lg text-[#e8d5f5]">
-                    <span className="text-[#ffd700] mt-0.5">✦</span>
-                    <span>{item}</span>
-                  </li>
+              <div className="mt-4 space-y-4">
+                {data.fullDescription.map((paragraph, i) => (
+                  <p key={i} className="text-base md:text-lg text-[#e8d5f5] leading-relaxed">
+                    {paragraph}
+                  </p>
                 ))}
-              </ul>
-            )}
-          </section>
-        )}
-
-        {/* На что обратить внимание */}
-        {data.challenges.length > 0 && (
-          <section className="glass-card p-5 mb-4 animate-fade-in-delay-2">
-            <button
-              onClick={() => setActiveSection(activeSection === 1 ? null : 1)}
-              className="w-full flex items-center justify-between text-left"
-            >
-              <h2 className="text-lg font-semibold text-[#ff69b4] flex items-center gap-2">
-                <span>🌑</span> На что обратить внимание
-              </h2>
-              <span className={`text-[#ff69b4] transition-transform ${activeSection === 1 ? "rotate-180" : ""}`}>▼</span>
-            </button>
-            {activeSection === 1 && (
-              <ul className="mt-4 space-y-2">
-                {data.challenges.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-base md:text-lg text-[#e8d5f5]">
-                    <span className="text-[#ff69b4] mt-0.5">◆</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+              </div>
             )}
           </section>
         )}
@@ -408,15 +382,15 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
         {data.karmaTasks.length > 0 && (
           <section className="glass-card p-5 mb-4 animate-fade-in-delay-2">
             <button
-              onClick={() => setActiveSection(activeSection === 2 ? null : 2)}
+              onClick={() => setActiveSection(activeSection === 1 ? null : 1)}
               className="w-full flex items-center justify-between text-left"
             >
               <h2 className="text-lg font-semibold text-[#9b59b6] flex items-center gap-2">
                 <span>🎯</span> Кармические задачи
               </h2>
-              <span className={`text-[#9b59b6] transition-transform ${activeSection === 2 ? "rotate-180" : ""}`}>▼</span>
+              <span className={`text-[#9b59b6] transition-transform ${activeSection === 1 ? "rotate-180" : ""}`}>▼</span>
             </button>
-            {activeSection === 2 && (
+            {activeSection === 1 && (
               <ul className="mt-4 space-y-2">
                 {data.karmaTasks.map((item, i) => (
                   <li key={i} className="flex items-start gap-2 text-base md:text-lg text-[#e8d5f5]">
@@ -429,28 +403,15 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
           </section>
         )}
 
-        {/* Испытания */}
-        {data.lifeTests.length > 0 && (
-          <section className="glass-card p-5 mb-4 animate-fade-in-delay-2">
-            <button
-              onClick={() => setActiveSection(activeSection === 3 ? null : 3)}
-              className="w-full flex items-center justify-between text-left"
-            >
-              <h2 className="text-lg font-semibold text-[#e8d5f5] flex items-center gap-2">
-                <span>⚡</span> Испытания жизни
-              </h2>
-              <span className={`text-[#e8d5f5] transition-transform ${activeSection === 3 ? "rotate-180" : ""}`}>▼</span>
-            </button>
-            {activeSection === 3 && (
-              <ul className="mt-4 space-y-2">
-                {data.lifeTests.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-base md:text-lg text-[#e8d5f5]">
-                    <span className="text-[#ffd700] mt-0.5">•</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
+        {/* Примечание про эфиры */}
+        {data.hasLiveEventNote && (
+          <section className="glass-card p-5 mb-4 animate-fade-in-delay-2 border-2 border-[#ffd700]/30">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">📅</span>
+              <p className="text-base md:text-lg text-[#e8d5f5] leading-relaxed">
+                <span className="text-[#ffd700] font-semibold">Подробно разберём на эфирах 20, 21 и 23 сентября.</span>
+              </p>
+            </div>
           </section>
         )}
 
