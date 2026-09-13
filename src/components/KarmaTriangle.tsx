@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export interface TriangleData {
   moneyCode?: number | null;
@@ -14,7 +14,7 @@ export interface TriangleData {
 }
 
 interface KarmaTriangleProps {
-  data: TriangleData;
+   TriangleData;
   highlightedCodes?: number[];
   title?: string;
   onCodeClick?: (code: number) => void;
@@ -33,7 +33,7 @@ function KarmaCircle({ value, x, y, size, highlighted, onClick }: CircleProps) {
   const hasValue = value !== null && value !== undefined;
   const isClickable = hasValue && onClick;
 
-  const borderSize = 2;
+  const borderSize = Math.max(1, size * 0.025); // Адаптивный размер бортика
 
   return (
     <div
@@ -55,9 +55,9 @@ function KarmaCircle({ value, x, y, size, highlighted, onClick }: CircleProps) {
         boxShadow: hasValue
           ? highlighted
             ? // Активный кружок - бортик внутри с градиентом и свечением
-              `inset 0 0 0 ${borderSize}px #9d0842, 0 0 15px #e42872, 0 0 30px #e42872`
+              `inset 0 0 0 ${borderSize}px #9d0842, 0 0 ${size * 0.2}px #e42872, 0 0 ${size * 0.4}px #e42872`
             : // Неактивный кружок - бортик снаружи, дизайнерский чёрный
-              `0 0 0 ${borderSize}px rgba(30, 30, 40, 0.7), 0 4px 12px rgba(0, 0, 0, 0.3)`
+              `0 0 0 ${borderSize}px rgba(30, 30, 40, 0.7), 0 ${size * 0.05}px ${size * 0.15}px rgba(0, 0, 0, 0.3)`
           : // Пустой кружок
             `0 0 0 ${borderSize}px rgba(30, 30, 40, 0.5)`,
       }}
@@ -69,6 +69,9 @@ function KarmaCircle({ value, x, y, size, highlighted, onClick }: CircleProps) {
 }
 
 export default function KarmaTriangle({ data, highlightedCodes = [], title, onCodeClick }: KarmaTriangleProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [circleSize, setCircleSize] = useState(80);
+
   const isHighlighted = (code: number | null | undefined) =>
     code !== null && code !== undefined && highlightedCodes.includes(code);
 
@@ -78,9 +81,25 @@ export default function KarmaTriangle({ data, highlightedCodes = [], title, onCo
     }
   };
 
+  // Адаптивный размер кружков
+  useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        const width = containerRef.current.offsetWidth;
+        // Размер кружка = 12% от ширины контейнера, но не меньше 40px и не больше 80px
+        const newSize = Math.max(40, Math.min(80, width * 0.12));
+        setCircleSize(newSize);
+      }
+    };
+
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+
   // Координаты центров кругов (в процентах от изображения 1341x1173)
   const positions = {
-    moneyCode: { x: (669 / 1341) * 100, y: (388 / 1173) * 100 }, // Смещён на 2px вверх
+    moneyCode: { x: (669 / 1341) * 100, y: (388 / 1173) * 100 },
     yearLesson: { x: (533 / 1341) * 100, y: (585 / 1173) * 100 },
     yearResource: { x: (806 / 1341) * 100, y: (585 / 1173) * 100 },
     karmaCode1: { x: (375 / 1341) * 100, y: (774 / 1173) * 100 },
@@ -92,10 +111,8 @@ export default function KarmaTriangle({ data, highlightedCodes = [], title, onCo
     destinyCode2: { x: (1011 / 1341) * 100, y: (1030 / 1173) * 100 },
   };
 
-  const circleSize = 80; // Размер кругов в пикселях
-
   return (
-    <div className="relative w-full max-w-2xl mx-auto my-8">
+    <div ref={containerRef} className="relative w-full max-w-2xl mx-auto my-8">
       {title && (
         <h3 className="text-center text-lg font-bold text-purple-800 mb-4">{title}</h3>
       )}
