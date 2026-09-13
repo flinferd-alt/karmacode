@@ -79,6 +79,41 @@ export default function YearLessonPage({ lessonCode, onBack, onCodeClick }: Year
           onCodeClick={onCodeClick}
         />
 
+        {/* Кармические уроки 2026 года */}
+        <section className="bg-white rounded-2xl p-6 mb-6 border-2 border-purple-300 shadow-lg animate-fade-in-delay-2">
+          <h2 className="text-2xl font-bold text-purple-900 mb-6 text-center">
+            КАРМИЧЕСКИЕ УРОКИ 2026 ГОДА
+          </h2>
+          
+          <div className="mb-6">
+            <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2">
+              <span className="text-2xl">✨</span> КОД {lessonCode} — {lessonData.title}
+            </h3>
+            <p className="text-gray-700 font-medium mb-4">
+              Ваши кармические уроки на 2026 год:
+            </p>
+            
+            <div className="space-y-3">
+              {lessonData.lessons.map((lesson, i) => (
+                <div key={i} className="flex items-start gap-3 bg-purple-50 p-4 rounded-xl border border-purple-200">
+                  <span className="text-purple-600 text-xl flex-shrink-0">~</span>
+                  <p className="text-gray-800 text-sm md:text-base leading-relaxed">
+                    {lesson}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {lessonData.summary && (
+              <div className="mt-6 bg-gradient-to-r from-pink-50 to-purple-50 p-4 rounded-xl border-2 border-pink-300">
+                <p className="text-gray-800 text-sm md:text-base leading-relaxed italic">
+                  {lessonData.summary}
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+
         {/* Вступление */}
         <section className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 mb-6 border-2 border-purple-200 animate-fade-in-delay">
           <p className="text-gray-800 leading-relaxed text-sm md:text-base mb-4">
@@ -159,48 +194,44 @@ export default function YearLessonPage({ lessonCode, onBack, onCodeClick }: Year
           </p>
         </section>
 
-        {/* Кармические уроки 2026 года */}
-        <section className="bg-white rounded-2xl p-6 mb-6 border-2 border-purple-300 shadow-lg animate-fade-in-delay-2">
-          <h2 className="text-2xl font-bold text-purple-900 mb-6 text-center">
-            КАРМИЧЕСКИЕ УРОКИ 2026 ГОДА
+        {/* Ближайшие эфиры */}
+        <section className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 mb-6 border-2 border-purple-200 animate-fade-in-delay-2">
+          <h2 className="text-xl font-bold text-purple-900 mb-4 text-center">
+            📅 Ближайшие эфиры
           </h2>
-          
-          <div className="mb-6">
-            <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2">
-              <span className="text-2xl">✨</span> КОД {lessonCode} — {lessonData.title}
-            </h3>
-            <p className="text-gray-700 font-medium mb-4">
-              Ваши кармические уроки на 2026 год:
-            </p>
-            
-            <div className="space-y-3">
-              {lessonData.lessons.map((lesson, i) => (
-                <div key={i} className="flex items-start gap-3 bg-purple-50 p-4 rounded-xl border border-purple-200">
-                  <span className="text-purple-600 text-xl flex-shrink-0">~</span>
-                  <p className="text-gray-800 text-sm md:text-base leading-relaxed">
-                    {lesson}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {lessonData.summary && (
-              <div className="mt-6 bg-gradient-to-r from-pink-50 to-purple-50 p-4 rounded-xl border-2 border-pink-300">
-                <p className="text-gray-800 text-sm md:text-base leading-relaxed italic">
-                  {lessonData.summary}
-                </p>
+          <p className="text-gray-800 text-sm mb-4 text-center">
+            Приходите на бесплатные эфиры, где я подробно разберу ваши коды и дам персональные рекомендации:
+          </p>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-purple-200">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-lg font-bold text-white shrink-0">
+                1
               </div>
-            )}
+              <div>
+                <div className="font-semibold text-purple-900">20 сентября</div>
+                <div className="text-xs text-gray-600">18:00 МСК • Разбор кодов кармы</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-purple-200">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-lg font-bold text-white shrink-0">
+                2
+              </div>
+              <div>
+                <div className="font-semibold text-purple-900">21 сентября</div>
+                <div className="text-xs text-gray-600">20:00 МСК • Практики активации кодов</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-purple-200">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-lg font-bold text-white shrink-0">
+                3
+              </div>
+              <div>
+                <div className="font-semibold text-purple-900">23 сентября</div>
+                <div className="text-xs text-gray-600">20:00 МСК • Индивидуальные разборы</div>
+              </div>
+            </div>
           </div>
         </section>
-
-        {/* Кнопка назад */}
-        <button
-          onClick={onBack}
-          className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg"
-        >
-          ← Вернуться назад
-        </button>
 
         {/* Футер */}
         <footer className="text-center text-gray-500 text-xs pb-6 mt-6">
