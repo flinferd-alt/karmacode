@@ -192,9 +192,18 @@ function App() {
                 karmaCode3: parseInt(code3),
                 karmaCode4: parseInt(code4)
               }}
-              title="Ваши Коды Личной Кармы"
               onCodeClick={(code) => handleCodeClick(code, "karmaCode1")}
             />
+            {/* Кнопка скачать шаблон */}
+            <div className="mt-6 text-center">
+              <a 
+                href="https://annabaryshnikova.com/karma/tri.png" 
+                download="karma-triangle-template.png"
+                className="inline-block px-8 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg"
+              >
+                📥 Скачать шаблон для заполнения
+              </a>
+            </div>
           </div>
         )}
 
