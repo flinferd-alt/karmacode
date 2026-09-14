@@ -182,6 +182,22 @@ function App() {
           </p>
         </section>
 
+        {/* Треугольник с кодами КЛК */}
+        {hasCodes && (
+          <div className="mb-8 animate-fade-in-delay-2">
+            <KarmaTriangle 
+              data={{
+                karmaCode1: parseInt(code1),
+                karmaCode2: parseInt(code2),
+                karmaCode3: parseInt(code3),
+                karmaCode4: parseInt(code4)
+              }}
+              title="Ваши Коды Личной Кармы"
+              onCodeClick={(code) => handleCodeClick(code, "karmaCode1")}
+            />
+          </div>
+        )}
+
         {/* Кода клиента */}
         {hasCodes ? (
           <section className="mb-8 animate-fade-in-delay-2">
