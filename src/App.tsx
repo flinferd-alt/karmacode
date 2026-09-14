@@ -195,11 +195,11 @@ function App() {
               onCodeClick={(code) => handleCodeClick(code, "karmaCode1")}
             />
             {/* Кнопка скачать шаблон */}
-            <div className="mt-6 text-center">
+            <div className="mt-6 text-center px-4">
               <a 
                 href="https://annabaryshnikova.com/karma/tri.png" 
                 download="karma-triangle-template.png"
-                className="inline-block px-8 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg"
+                className="inline-block w-full sm:w-auto px-6 md:px-8 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-sm md:text-base hover:opacity-90 transition-opacity shadow-lg min-h-[44px] flex items-center justify-center"
               >
                 📥 Скачать шаблон для заполнения
               </a>
@@ -213,7 +213,7 @@ function App() {
             <h2 className="text-xl font-semibold text-center text-purple-900 mb-5">
               Ваши Коды личной Кармы (КЛК)
             </h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {code1 && <CodeButton code={code1} label="1 КЛК" onClick={() => handleCodeClick(code1, "karmaCode1")} />}
               {code2 && <CodeButton code={code2} label="2 КЛК" onClick={() => handleCodeClick(code2, "karmaCode2")} />}
               {code3 && <CodeButton code={code3} label="3 КЛК" onClick={() => handleCodeClick(code3, "karmaCode3")} />}
@@ -223,7 +223,7 @@ function App() {
             {/* Кнопка "Узнать свой Урок года" */}
             <button
               onClick={handleGoToLesson}
-              className="mt-6 w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg"
+              className="mt-6 w-full py-3 md:py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-sm md:text-base hover:opacity-90 transition-opacity shadow-lg min-h-[44px]"
             >
               📖 Узнать свой Урок года
             </button>
@@ -231,7 +231,7 @@ function App() {
             {/* Кнопка "Калькулятор кармической связи" */}
             <button
               onClick={handleGoToCalculator}
-              className="mt-3 w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 to-pink-500 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg"
+              className="mt-3 w-full py-3 md:py-4 rounded-xl bg-gradient-to-r from-amber-500 to-pink-500 text-white font-bold text-sm md:text-base hover:opacity-90 transition-opacity shadow-lg min-h-[44px]"
             >
               🔗 Калькулятор кармической связи
             </button>
@@ -248,21 +248,21 @@ function App() {
         )}
 
         {/* Блок с эфирами */}
-        <section className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 mb-8 shadow-lg border-2 border-purple-200 animate-fade-in-delay-2">
-          <h2 className="text-xl font-semibold text-purple-900 mb-4 flex items-center gap-2">
+        <section className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-4 md:p-6 mb-8 shadow-lg border-2 border-purple-200 animate-fade-in-delay-2">
+          <h2 className="text-lg md:text-xl font-semibold text-purple-900 mb-4 flex items-center gap-2">
             <span>📅</span> Ближайшие эфиры
           </h2>
-          <p className="text-gray-700 text-sm mb-4">
+          <p className="text-gray-700 text-xs md:text-sm mb-4">
             Приходите на бесплатные эфиры, где я подробно разберу ваши коды и дам персональные рекомендации:
           </p>
           <div className="space-y-3">
             {EVENT_DATES.map((event, i) => (
               <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white border border-purple-200">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-lg font-bold text-white shrink-0">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-sm md:text-lg font-bold text-white shrink-0">
                   {i + 1}
                 </div>
                 <div>
-                  <div className="font-semibold text-purple-900">{event.date}</div>
+                  <div className="font-semibold text-purple-900 text-sm md:text-base">{event.date}</div>
                   <div className="text-xs text-gray-600">{event.time} • {event.topic}</div>
                 </div>
               </div>
@@ -270,7 +270,7 @@ function App() {
           </div>
           <button
             onClick={() => setShowEvents(true)}
-            className="mt-5 w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg"
+            className="mt-5 w-full py-3 md:py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-sm md:text-base hover:opacity-90 transition-opacity shadow-lg min-h-[44px]"
           >
             Записаться на эфир ✨
           </button>
@@ -296,18 +296,18 @@ function CodeButton({ code, label, onClick }: { code: string; label: string; onC
   return (
     <div
       onClick={onClick}
-      className="code-button group relative p-5 rounded-2xl bg-white border-2 border-purple-300 hover:border-purple-500 transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg cursor-pointer"
+      className="code-button group relative p-4 md:p-5 rounded-2xl bg-white border-2 border-purple-300 hover:border-purple-500 transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg cursor-pointer"
     >
-      <div className="text-3xl mb-2">{data.symbol}</div>
-      <div className="text-xs text-gray-600 mb-1">{label}</div>
-      <div className="text-2xl font-bold text-purple-900">{code}</div>
-      <div className="text-xs text-pink-600 mt-1 font-medium mb-3">{data.title}</div>
+      <div className="text-2xl md:text-3xl mb-2">{data.symbol}</div>
+      <div className="text-xs md:text-sm text-gray-600 mb-1">{label}</div>
+      <div className="text-xl md:text-2xl font-bold text-purple-900">{code}</div>
+      <div className="text-xs md:text-sm text-pink-600 mt-1 font-medium mb-3">{data.title}</div>
       <button
         onClick={(e) => {
           e.stopPropagation();
           onClick();
         }}
-        className="w-full py-2 px-4 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+        className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm md:text-base font-semibold hover:opacity-90 transition-opacity cursor-pointer min-h-[44px]"
       >
         Подробнее
       </button>
