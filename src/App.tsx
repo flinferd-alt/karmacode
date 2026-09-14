@@ -171,18 +171,14 @@ function App() {
 
         {/* Краткое описание системы */}
         <section className="bg-white rounded-2xl p-6 mb-8 shadow-lg border-2 border-purple-200 animate-fade-in-delay">
-          <h2 className="text-xl font-semibold text-purple-900 mb-3 flex items-center gap-2">
-            <span>🔮</span> О системе
-          </h2>
-          <p className="text-gray-800 leading-relaxed text-sm md:text-base">
-            Коды Кармы — это числовые вибрации, которые определяют вашу судьбу, 
-            характер и жизненные задачи. Каждый код несёт свою уникальную энергию, 
-            сильные стороны и кармические уроки.
+          <p className="text-gray-800 leading-relaxed text-sm md:text-base mb-4">
+            Только что вы получили расчет 4-х кодов кармы. Это ваши коды, с которыми вы родились и пришли в эту жизнь. Всего у человека 4 Кода Личной Кармы, не путайте с Уроком Года! Это была задача на год, сейчас мы говорим про задачи на жизнь.
           </p>
-          <p className="text-gray-800 leading-relaxed text-sm md:text-base mt-3">
-            Ниже представлены <strong className="text-pink-600">4 ключевых кода</strong> (КЛК), 
-            рассчитанные по вашей дате рождения. Нажмите на любой код, чтобы узнать 
-            его подробное описание, кармические задачи и рекомендации.
+          <p className="text-gray-800 leading-relaxed text-sm md:text-base mb-4">
+            <strong className="text-purple-900">"Код Судьбы"</strong> — это единственная система, в которой можно рассчитать кармические уроки или коды личной кармы по дате рождения. Это так называемые "включатели" всех наших проблем и потерь в жизни.
+          </p>
+          <p className="text-gray-800 leading-relaxed text-sm md:text-base">
+            Очень важно карму гармонизировать - тогда негативные сценарии и события будут открывать новые возможности. Пока уроки не извлечены, коды продолжают создавать повторяющиеся сценарии, заставляя возвращаться к нерешенным вопросам.
           </p>
         </section>
 
@@ -190,7 +186,7 @@ function App() {
         {hasCodes ? (
           <section className="mb-8 animate-fade-in-delay-2">
             <h2 className="text-xl font-semibold text-center text-purple-900 mb-5">
-              Ваши коды
+              Ваши Коды личной Кармы (КЛК)
             </h2>
             <div className="grid grid-cols-2 gap-4">
               {code1 && <CodeButton code={code1} label="1 КЛК" onClick={() => handleCodeClick(code1, "karmaCode1")} />}
