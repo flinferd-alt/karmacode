@@ -294,15 +294,24 @@ function App() {
 function CodeButton({ code, label, onClick }: { code: string; label: string; onClick: () => void }) {
   const data = getKarmaData(code);
   return (
-    <button
+    <div
       onClick={onClick}
-      className="code-button group relative p-5 rounded-2xl bg-white border-2 border-purple-300 hover:border-purple-500 transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg"
+      className="code-button group relative p-5 rounded-2xl bg-white border-2 border-purple-300 hover:border-purple-500 transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg cursor-pointer"
     >
       <div className="text-3xl mb-2">{data.symbol}</div>
       <div className="text-xs text-gray-600 mb-1">{label}</div>
       <div className="text-2xl font-bold text-purple-900">{code}</div>
-      <div className="text-xs text-pink-600 mt-1 font-medium">{data.title}</div>
-    </button>
+      <div className="text-xs text-pink-600 mt-1 font-medium mb-3">{data.title}</div>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick();
+        }}
+        className="w-full py-2 px-4 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-semibold hover:opacity-90 transition-opacity cursor-pointer"
+      >
+        Подробнее
+      </button>
+    </div>
   );
 }
 
