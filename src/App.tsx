@@ -44,7 +44,6 @@ function App() {
   const [code3, setCode3] = useState<string>("");
   const [code4, setCode4] = useState<string>("");
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
-  const [trianglePosition, setTrianglePosition] = useState<string>("karmaCode1"); // Позиция кода в треугольнике
   const [showEvents, setShowEvents] = useState(false);
   const [currentPage, setCurrentPage] = useState<"main" | "lesson" | "calculator">("main");
   const [lessonCode, setLessonCode] = useState<number>(1);
@@ -109,10 +108,9 @@ function App() {
   const codes = [code1, code2, code3, code4].filter(Boolean);
   const hasCodes = codes.length > 0;
 
-  const handleCodeClick = (code: string | number, position: string = "karmaCode1") => {
+  const handleCodeClick = (code: string | number) => {
     setCurrentPage("main");
     setSelectedCode(String(code));
-    setTrianglePosition(position);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -130,7 +128,7 @@ function App() {
 
   // Специальная функция для клика по коду из урока года
   const handleCodeClickFromLesson = (code: number) => {
-    handleCodeClick(code, "yearLesson");
+    handleCodeClick(code);
   };
 
   const handleGoToCalculator = () => {
@@ -151,7 +149,7 @@ function App() {
   // Экран с описанием конкретного кода
   if (selectedCode) {
     const data = getKarmaData(selectedCode);
-    return <CodeDetail code={selectedCode} data={data} onBack={handleBack} trianglePosition={trianglePosition} />;
+    return <CodeDetail code={selectedCode} data={data} onBack={handleBack} />;
   }
 
   // Главная страница
@@ -192,7 +190,7 @@ function App() {
                 karmaCode3: parseInt(code3),
                 karmaCode4: parseInt(code4)
               }}
-              onCodeClick={(code) => handleCodeClick(code, "karmaCode1")}
+              onCodeClick={(code) => handleCodeClick(code)}
             />
             {/* Кнопка скачать шаблон */}
             <div className="mt-6 text-center px-4">
@@ -214,10 +212,10 @@ function App() {
               Ваши Коды личной Кармы (КЛК)
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {code1 && <CodeButton code={code1} label="1 КЛК" onClick={() => handleCodeClick(code1, "karmaCode1")} />}
-              {code2 && <CodeButton code={code2} label="2 КЛК" onClick={() => handleCodeClick(code2, "karmaCode2")} />}
-              {code3 && <CodeButton code={code3} label="3 КЛК" onClick={() => handleCodeClick(code3, "karmaCode3")} />}
-              {code4 && <CodeButton code={code4} label="4 КЛК" onClick={() => handleCodeClick(code4, "karmaCode4")} />}
+              {code1 && <CodeButton code={code1} label="1 КЛК" onClick={() => handleCodeClick(code1)} />}
+              {code2 && <CodeButton code={code2} label="2 КЛК" onClick={() => handleCodeClick(code2)} />}
+              {code3 && <CodeButton code={code3} label="3 КЛК" onClick={() => handleCodeClick(code3)} />}
+              {code4 && <CodeButton code={code4} label="4 КЛК" onClick={() => handleCodeClick(code4)} />}
             </div>
             
             {/* Кнопка "Узнать свой Урок года" */}
@@ -296,7 +294,7 @@ function CodeButton({ code, label, onClick }: { code: string; label: string; onC
   return (
     <div
       onClick={onClick}
-      className="code-button group relative p-4 md:p-5 rounded-2xl bg-white border-2 border-purple-300 hover:border-purple-500 transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg cursor-pointer"
+      className="code-button group relative p-4 md:p-5 rounded-2xl bg-white border-2 border-purple-300 hover:border-purple-500 transition-all duration-300 hover:scale-105 hover:shadow-xl shadow-lg cursor-pointer text-center"
     >
       <div className="text-2xl md:text-3xl mb-2">{data.symbol}</div>
       <div className="text-xs md:text-sm text-gray-600 mb-1">{label}</div>
@@ -316,28 +314,8 @@ function CodeButton({ code, label, onClick }: { code: string; label: string; onC
 }
 
 // Экран с описанием кода
-function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { code: string; data: KarmaCodeData; onBack: () => void; trianglePosition?: string }) {
-  const [activeSection, setActiveSection] = useState<number | null>(null);
+function CodeDetail({ code, data, onBack }: { code: string; data: KarmaCodeData; onBack: () => void }) {
   const [showEvents, setShowEvents] = useState(false);
-  
-  // Формируем данные для треугольника в зависимости от позиции
-  const getTriangleData = () => {
-    const codeNum = parseInt(code);
-    switch (trianglePosition) {
-      case "yearLesson":
-        return { yearLesson: codeNum };
-      case "karmaCode1":
-        return { karmaCode1: codeNum };
-      case "karmaCode2":
-        return { karmaCode2: codeNum };
-      case "karmaCode3":
-        return { karmaCode3: codeNum };
-      case "karmaCode4":
-        return { karmaCode4: codeNum };
-      default:
-        return { karmaCode1: codeNum };
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-white text-gray-900 relative overflow-hidden">
@@ -345,7 +323,7 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
         {/* Заголовок кода */}
         <header className="text-center mb-8 animate-fade-in">
           <div className="text-6xl mb-3">{data.symbol}</div>
-          <div className="text-sm text-gray-600 mb-1">Код {code}</div>
+          <div className="text-sm text-gray-600 mb-1">{code} Код личной Кармы (КЛК)</div>
           <h1 className="text-3xl md:text-4xl font-bold text-purple-900">
             {data.title}
           </h1>
@@ -356,12 +334,6 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
         <div className="md:hidden mb-6">
           <CodeImage code={code} title={data.title} />
         </div>
-
-        {/* Треугольник с кодом */}
-        <KarmaTriangle 
-          data={getTriangleData()}
-          title={trianglePosition === "yearLesson" ? "Ваш урок года" : "Ваш код кармы"}
-        />
 
         {/* Контент с картинкой */}
         <div className="code-content-with-image">
@@ -376,49 +348,33 @@ function CodeDetail({ code, data, onBack, trianglePosition = "karmaCode1" }: { c
         {/* Полное описание кода */}
         {data.fullDescription.length > 0 && (
           <section className="bg-white rounded-2xl p-5 mb-4 shadow-lg border-2 border-purple-200 animate-fade-in-delay">
-            <button
-              onClick={() => setActiveSection(activeSection === 0 ? null : 0)}
-              className="w-full flex items-center justify-between text-left"
-            >
-              <h2 className="text-lg font-semibold text-purple-900 flex items-center gap-2">
-                <span>📖</span> Подробное описание
-              </h2>
-              <span className={`text-[#ffd700] transition-transform ${activeSection === 0 ? "rotate-180" : ""}`}>▼</span>
-            </button>
-            {activeSection === 0 && (
-              <div className="mt-4 space-y-4">
-                {data.fullDescription.map((paragraph, i) => (
-                  <p key={i} className="text-base md:text-lg text-gray-800 leading-relaxed">
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-            )}
+            <h2 className="text-lg font-semibold text-purple-900 flex items-center gap-2 mb-4">
+              <span>📖</span> Подробное описание
+            </h2>
+            <div className="space-y-4">
+              {data.fullDescription.map((paragraph, i) => (
+                <p key={i} className="text-base md:text-lg text-gray-800 leading-relaxed">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
           </section>
         )}
 
         {/* Кармические задачи */}
         {data.karmaTasks.length > 0 && (
           <section className="bg-white rounded-2xl p-5 mb-4 shadow-lg border-2 border-purple-200 animate-fade-in-delay-2">
-            <button
-              onClick={() => setActiveSection(activeSection === 1 ? null : 1)}
-              className="w-full flex items-center justify-between text-left"
-            >
-              <h2 className="text-lg font-semibold text-purple-700 flex items-center gap-2">
-                <span>🎯</span> Кармические задачи
-              </h2>
-              <span className={`text-purple-700 transition-transform ${activeSection === 1 ? "rotate-180" : ""}`}>▼</span>
-            </button>
-            {activeSection === 1 && (
-              <ul className="mt-4 space-y-2">
-                {data.karmaTasks.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-base md:text-lg text-gray-800">
-                    <span className="text-purple-700 mt-0.5">{i + 1}.</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <h2 className="text-lg font-semibold text-purple-700 flex items-center gap-2 mb-4">
+              <span>🎯</span> Кармические задачи
+            </h2>
+            <ul className="space-y-2">
+              {data.karmaTasks.map((item, i) => (
+                <li key={i} className="flex items-start gap-2 text-base md:text-lg text-gray-800">
+                  <span className="text-purple-700 mt-0.5">{i + 1}.</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
           </section>
         )}
 
