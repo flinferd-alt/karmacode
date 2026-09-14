@@ -225,14 +225,6 @@ function App() {
             >
               📖 Узнать свой Урок года
             </button>
-            
-            {/* Кнопка "Калькулятор кармической связи" */}
-            <button
-              onClick={handleGoToCalculator}
-              className="mt-3 w-full py-3 md:py-4 rounded-xl bg-gradient-to-r from-amber-500 to-pink-500 text-white font-bold text-sm md:text-base hover:opacity-90 transition-opacity shadow-lg min-h-[44px]"
-            >
-              🔗 Калькулятор кармической связи
-            </button>
           </section>
         ) : (
           <section className="bg-white rounded-2xl p-6 mb-8 shadow-lg border-2 border-purple-200 text-center animate-fade-in-delay">

@@ -733,19 +733,19 @@ export default function KarmicConnectionPage({ onBack, onCodeClick, onGoToLesson
               </section>
             )}
 
-            {/* Кнопки перехода на другие калькуляторы */}
-            <div className="grid md:grid-cols-2 gap-4 mb-6">
+            {/* Кнопки перехода на другие страницы */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
               <button
                 onClick={onGoToLesson}
-                className="py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/30"
+                className="py-3 md:py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-sm md:text-base hover:opacity-90 transition-opacity shadow-lg min-h-[44px]"
               >
                 📖 Узнать свой Урок года
               </button>
               <button
                 onClick={onBack}
-                className="py-4 rounded-xl bg-gradient-to-r from-[#ffd700] to-[#ff69b4] text-[#1a0a2e] font-bold text-base hover:opacity-90 transition-opacity shadow-lg shadow-yellow-500/30"
+                className="py-3 md:py-4 rounded-xl bg-gradient-to-r from-amber-500 to-pink-500 text-white font-bold text-sm md:text-base hover:opacity-90 transition-opacity shadow-lg min-h-[44px]"
               >
-                🔙 Вернуться к кодам
+                🔗 Ваши Коды личной Кармы
               </button>
             </div>
           </div>
