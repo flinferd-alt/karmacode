@@ -1,17 +1,13 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export interface TriangleData {
-  // Верхний ряд (1 кружок)
   moneyCode?: number | null;
-  // Второй ряд (2 кружка)
   yearLesson?: number | null;
   yearResource?: number | null;
-  // Третий ряд (4 кружка)
   karmaCode1?: number | null;
   karmaCode2?: number | null;
   karmaCode3?: number | null;
   karmaCode4?: number | null;
-  // Четвёртый ряд (3 кружка)
   birthCode?: number | null;
   destinyCode1?: number | null;
   destinyCode2?: number | null;
@@ -19,64 +15,64 @@ export interface TriangleData {
 
 interface KarmaTriangleProps {
   data: TriangleData;
-  highlightedCodes?: number[]; // Коды для подсветки (совпадения)
+  highlightedCodes?: number[];
   title?: string;
-  onCodeClick?: (code: number) => void; // Обработчик клика по коду
+  onCodeClick?: (code: number) => void;
 }
 
 interface CircleProps {
   value: number | null | undefined;
-  label: string;
+  x: number;
+  y: number;
+  size: number;
   highlighted?: boolean;
-  tooltip?: string;
   onClick?: () => void;
 }
 
-function KarmaCircle({ value, label, highlighted, tooltip, onClick }: CircleProps) {
-  const [showTooltip, setShowTooltip] = useState(false);
-  
+function KarmaCircle({ value, x, y, size, highlighted, onClick }: CircleProps) {
   const hasValue = value !== null && value !== undefined;
   const isClickable = hasValue && onClick;
-  
+
+  const borderSize = Math.max(1, size * 0.025); // Адаптивный размер бортика
+
   return (
-    <div 
-      className={`relative flex flex-col items-center ${isClickable ? 'cursor-pointer' : ''}`}
-      onMouseEnter={() => tooltip && setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
+    <div
+      className={`absolute flex items-center justify-center rounded-full font-bold transition-all duration-300 ${
+        hasValue
+          ? highlighted
+            ? "bg-gradient-to-br from-yellow-400 via-amber-400 to-yellow-500 text-purple-900 animate-pulse-slow"
+            : "bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500 text-white hover:scale-105"
+          : "bg-gray-300 text-gray-500"
+      } ${isClickable ? "cursor-pointer" : ""}`}
+      style={{
+        left: `${x}%`,
+        top: `${y}%`,
+        width: `${size}px`,
+        height: `${size}px`,
+        transform: "translate(-50%, -50%)",
+        fontSize: `${size * 0.4}px`,
+        // Бортики
+        boxShadow: hasValue
+          ? highlighted
+            ? // Активный кружок - бортик внутри с градиентом и свечением
+              `inset 0 0 0 ${borderSize}px #9d0842, 0 0 ${size * 0.2}px #e42872, 0 0 ${size * 0.4}px #e42872`
+            : // Неактивный кружок - бортик снаружи, дизайнерский чёрный
+              `0 0 0 ${borderSize}px rgba(30, 30, 40, 0.7), 0 ${size * 0.05}px ${size * 0.15}px rgba(0, 0, 0, 0.3)`
+          : // Пустой кружок
+            `0 0 0 ${borderSize}px rgba(30, 30, 40, 0.5)`,
+      }}
       onClick={onClick}
     >
-      <div 
-        className={`
-          w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center
-          font-bold text-xl md:text-2xl transition-all duration-300
-          ${hasValue 
-            ? highlighted 
-              ? "bg-gradient-to-br from-yellow-400 via-amber-400 to-yellow-500 text-purple-900 shadow-2xl shadow-yellow-400/60 animate-pulse-slow ring-4 ring-yellow-300/50 scale-110"
-              : "bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500 text-white shadow-xl hover:shadow-2xl hover:scale-105"
-            : "bg-gray-300 text-gray-500"
-          }
-          ${isClickable ? 'hover:ring-4 hover:ring-purple-300/50' : ''}
-        `}
-      >
-        {hasValue ? value : "—"}
-      </div>
-      <span className="text-xs md:text-sm text-purple-800 mt-2 text-center leading-tight max-w-[90px] font-medium">
-        {label}
-      </span>
-      
-      {/* Tooltip */}
-      {showTooltip && tooltip && (
-        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-purple-900 text-white text-xs px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-50">
-          {tooltip}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-purple-900"></div>
-        </div>
-      )}
+      {hasValue ? value : "—"}
     </div>
   );
 }
 
 export default function KarmaTriangle({ data, highlightedCodes = [], title, onCodeClick }: KarmaTriangleProps) {
-  const isHighlighted = (code: number | null | undefined) => 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [circleSize, setCircleSize] = useState(80);
+
+  const isHighlighted = (code: number | null | undefined) =>
     code !== null && code !== undefined && highlightedCodes.includes(code);
 
   const handleClick = (code: number | null | undefined) => {
@@ -85,136 +81,132 @@ export default function KarmaTriangle({ data, highlightedCodes = [], title, onCo
     }
   };
 
+  // Адаптивный размер кружков
+  useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        const width = containerRef.current.offsetWidth;
+        // Размер кружка = 12% от ширины контейнера, но не меньше 40px и не больше 80px
+        const newSize = Math.max(40, Math.min(80, width * 0.12));
+        setCircleSize(newSize);
+      }
+    };
+
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+
+  // Координаты центров кругов (в процентах от изображения 1341x1173)
+  const positions = {
+    moneyCode: { x: (669 / 1341) * 100, y: (388 / 1173) * 100 },
+    yearLesson: { x: (533 / 1341) * 100, y: (585 / 1173) * 100 },
+    yearResource: { x: (806 / 1341) * 100, y: (585 / 1173) * 100 },
+    karmaCode1: { x: (375 / 1341) * 100, y: (774 / 1173) * 100 },
+    karmaCode2: { x: (569 / 1341) * 100, y: (774 / 1173) * 100 },
+    karmaCode3: { x: (770 / 1341) * 100, y: (774 / 1173) * 100 },
+    karmaCode4: { x: (962 / 1341) * 100, y: (774 / 1173) * 100 },
+    birthCode: { x: (327 / 1341) * 100, y: (1030 / 1173) * 100 },
+    destinyCode1: { x: (669 / 1341) * 100, y: (1030 / 1173) * 100 },
+    destinyCode2: { x: (1011 / 1341) * 100, y: (1030 / 1173) * 100 },
+  };
+
   return (
-    <div className="relative w-full max-w-md mx-auto my-8">
-      {/* Светлый фон с градиентом */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-purple-50 to-purple-100 rounded-3xl shadow-2xl"></div>
+    <div ref={containerRef} className="relative w-full max-w-2xl mx-auto my-8">
+      {title && (
+        <h3 className="text-center text-lg font-bold text-purple-800 mb-4">{title}</h3>
+      )}
       
-      {/* Содержимое */}
-      <div className="relative p-6 md:p-8">
-        {title && (
-          <h3 className="text-center text-lg font-bold text-purple-800 mb-6">{title}</h3>
-        )}
+      {/* Контейнер с изображением и кругами */}
+      <div className="relative w-full" style={{ paddingBottom: "87.47%" /* 1173/1341 * 100 */ }}>
+        {/* Фоновое изображение */}
+        <img
+          src="https://annabaryshnikova.com/karma/tri.png"
+          alt="Треугольник кодов"
+          className="absolute inset-0 w-full h-full object-contain"
+        />
         
-        {/* Треугольник */}
-        <div className="flex flex-col items-center gap-4 md:gap-6">
-          
-          {/* Ряд 1: Денежный код (1 кружок) */}
-          <div className="flex justify-center">
-            <KarmaCircle 
-              value={data.moneyCode} 
-              label="Денежный код"
-              highlighted={isHighlighted(data.moneyCode)}
-              tooltip={data.moneyCode ? `Код: ${data.moneyCode}` : undefined}
-              onClick={() => handleClick(data.moneyCode)}
-            />
-          </div>
-          
-          {/* Ряд 2: Урок года и Ресурс года (2 кружка) */}
-          <div className="flex justify-center gap-6 md:gap-10">
-            <KarmaCircle 
-              value={data.yearLesson} 
-              label="Урок года"
-              highlighted={isHighlighted(data.yearLesson)}
-              tooltip={data.yearLesson ? `Код: ${data.yearLesson}` : undefined}
-              onClick={() => handleClick(data.yearLesson)}
-            />
-            <KarmaCircle 
-              value={data.yearResource} 
-              label="Ресурс года"
-              highlighted={isHighlighted(data.yearResource)}
-              tooltip={data.yearResource ? `Код: ${data.yearResource}` : undefined}
-              onClick={() => handleClick(data.yearResource)}
-            />
-          </div>
-          
-          {/* Ряд 3: Коды Кармы 1-4 (4 кружка) */}
-          <div className="flex justify-center gap-3 md:gap-5">
-            <KarmaCircle 
-              value={data.karmaCode1} 
-              label="Код Кармы 1"
-              highlighted={isHighlighted(data.karmaCode1)}
-              tooltip={data.karmaCode1 ? `КЛК 1: ${data.karmaCode1}` : undefined}
-              onClick={() => handleClick(data.karmaCode1)}
-            />
-            <KarmaCircle 
-              value={data.karmaCode2} 
-              label="Код Кармы 2"
-              highlighted={isHighlighted(data.karmaCode2)}
-              tooltip={data.karmaCode2 ? `КЛК 2: ${data.karmaCode2}` : undefined}
-              onClick={() => handleClick(data.karmaCode2)}
-            />
-            <KarmaCircle 
-              value={data.karmaCode3} 
-              label="Код Кармы 3"
-              highlighted={isHighlighted(data.karmaCode3)}
-              tooltip={data.karmaCode3 ? `КЛК 3: ${data.karmaCode3}` : undefined}
-              onClick={() => handleClick(data.karmaCode3)}
-            />
-            <KarmaCircle 
-              value={data.karmaCode4} 
-              label="Код Кармы 4"
-              highlighted={isHighlighted(data.karmaCode4)}
-              tooltip={data.karmaCode4 ? `КЛК 4: ${data.karmaCode4}` : undefined}
-              onClick={() => handleClick(data.karmaCode4)}
-            />
-          </div>
-          
-          {/* Ряд 4: Код рождения, Коды судьбы (3 кружка) */}
-          <div className="flex justify-center gap-6 md:gap-10">
-            <KarmaCircle 
-              value={data.birthCode} 
-              label="Код рождения"
-              highlighted={isHighlighted(data.birthCode)}
-              tooltip={data.birthCode ? `КР: ${data.birthCode}` : undefined}
-              onClick={() => handleClick(data.birthCode)}
-            />
-            <KarmaCircle 
-              value={data.destinyCode1} 
-              label="Код судьбы 1"
-              highlighted={isHighlighted(data.destinyCode1)}
-              tooltip={data.destinyCode1 ? `КС 1: ${data.destinyCode1}` : undefined}
-              onClick={() => handleClick(data.destinyCode1)}
-            />
-            <KarmaCircle 
-              value={data.destinyCode2} 
-              label="Код судьбы 2"
-              highlighted={isHighlighted(data.destinyCode2)}
-              tooltip={data.destinyCode2 ? `КС 2: ${data.destinyCode2}` : undefined}
-              onClick={() => handleClick(data.destinyCode2)}
-            />
-          </div>
-        </div>
-        
-        {/* Декоративный треугольник - более яркий и современный */}
-        <svg 
-          className="absolute inset-0 w-full h-full pointer-events-none"
-          viewBox="0 0 400 500"
-          preserveAspectRatio="none"
-        >
-          <defs>
-            <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#FFD700" stopOpacity="0.8" />
-              <stop offset="50%" stopColor="#FFA500" stopOpacity="0.9" />
-              <stop offset="100%" stopColor="#FFD700" stopOpacity="0.8" />
-            </linearGradient>
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-              <feMerge>
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-          </defs>
-          <path 
-            d="M 200 50 L 350 450 L 50 450 Z" 
-            fill="none" 
-            stroke="url(#goldGradient)" 
-            strokeWidth="4"
-            filter="url(#glow)"
-            opacity="0.6"
-          />
-        </svg>
+        {/* Круги с кодами */}
+        <KarmaCircle
+          value={data.moneyCode}
+          x={positions.moneyCode.x}
+          y={positions.moneyCode.y}
+          size={circleSize}
+          highlighted={isHighlighted(data.moneyCode)}
+          onClick={() => handleClick(data.moneyCode)}
+        />
+        <KarmaCircle
+          value={data.yearLesson}
+          x={positions.yearLesson.x}
+          y={positions.yearLesson.y}
+          size={circleSize}
+          highlighted={isHighlighted(data.yearLesson)}
+          onClick={() => handleClick(data.yearLesson)}
+        />
+        <KarmaCircle
+          value={data.yearResource}
+          x={positions.yearResource.x}
+          y={positions.yearResource.y}
+          size={circleSize}
+          highlighted={isHighlighted(data.yearResource)}
+          onClick={() => handleClick(data.yearResource)}
+        />
+        <KarmaCircle
+          value={data.karmaCode1}
+          x={positions.karmaCode1.x}
+          y={positions.karmaCode1.y}
+          size={circleSize}
+          highlighted={isHighlighted(data.karmaCode1)}
+          onClick={() => handleClick(data.karmaCode1)}
+        />
+        <KarmaCircle
+          value={data.karmaCode2}
+          x={positions.karmaCode2.x}
+          y={positions.karmaCode2.y}
+          size={circleSize}
+          highlighted={isHighlighted(data.karmaCode2)}
+          onClick={() => handleClick(data.karmaCode2)}
+        />
+        <KarmaCircle
+          value={data.karmaCode3}
+          x={positions.karmaCode3.x}
+          y={positions.karmaCode3.y}
+          size={circleSize}
+          highlighted={isHighlighted(data.karmaCode3)}
+          onClick={() => handleClick(data.karmaCode3)}
+        />
+        <KarmaCircle
+          value={data.karmaCode4}
+          x={positions.karmaCode4.x}
+          y={positions.karmaCode4.y}
+          size={circleSize}
+          highlighted={isHighlighted(data.karmaCode4)}
+          onClick={() => handleClick(data.karmaCode4)}
+        />
+        <KarmaCircle
+          value={data.birthCode}
+          x={positions.birthCode.x}
+          y={positions.birthCode.y}
+          size={circleSize}
+          highlighted={isHighlighted(data.birthCode)}
+          onClick={() => handleClick(data.birthCode)}
+        />
+        <KarmaCircle
+          value={data.destinyCode1}
+          x={positions.destinyCode1.x}
+          y={positions.destinyCode1.y}
+          size={circleSize}
+          highlighted={isHighlighted(data.destinyCode1)}
+          onClick={() => handleClick(data.destinyCode1)}
+        />
+        <KarmaCircle
+          value={data.destinyCode2}
+          x={positions.destinyCode2.x}
+          y={positions.destinyCode2.y}
+          size={circleSize}
+          highlighted={isHighlighted(data.destinyCode2)}
+          onClick={() => handleClick(data.destinyCode2)}
+        />
       </div>
     </div>
   );

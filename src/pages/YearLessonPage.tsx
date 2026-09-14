@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
-import { getYearLessonData, YearLessonData } from "../data/yearLessons";
-import { getKarmaData } from "../data/karmaCodes";
+import { useState } from "react";
+import { yearLessons2026 } from "../data/yearLessons2026";
 import KarmaTriangle from "../components/KarmaTriangle";
+import CalendarModal from "../components/CalendarModal";
+import CodeImage from "../components/CodeImage";
 
 interface YearLessonPageProps {
   lessonCode: number;
@@ -49,47 +50,35 @@ const SIGNS_TEXT = [
 ];
 
 export default function YearLessonPage({ lessonCode, onBack, onCodeClick }: YearLessonPageProps) {
-  const [data, setData] = useState<YearLessonData | null>(null);
   const [expandedSign, setExpandedSign] = useState<number | null>(null);
   const [showAllSigns, setShowAllSigns] = useState(false);
+  const [showEvents, setShowEvents] = useState(false);
 
-  useEffect(() => {
-    const lessonData = getYearLessonData(lessonCode);
-    setData(lessonData);
-  }, [lessonCode]);
+  const lessonData = yearLessons2026[lessonCode];
 
-  if (!data) {
+  if (!lessonData) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-purple-300 text-xl animate-pulse">Загрузка...</div>
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-purple-600 text-xl animate-pulse">Загрузка...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1a0a2e] via-[#2d1b4e] to-[#1a0a2e] text-white relative overflow-hidden">
-      <div className="stars-bg" />
-      <div className="floating-orb orb-1" />
-      <div className="floating-orb orb-2" />
-
+    <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden">
       <div className="relative z-10 max-w-2xl mx-auto px-4 py-6">
-        {/* Кнопка назад */}
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 text-[#ffd700] mb-6 hover:opacity-80 transition-opacity"
-        >
-          <span>←</span>
-          <span className="text-sm">Назад</span>
-        </button>
-
         {/* Заголовок */}
         <header className="text-center mb-8 animate-fade-in">
           <div className="text-6xl mb-3">📖</div>
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#ffd700] via-[#ff69b4] to-[#9b59b6] bg-clip-text text-transparent">
-            Ваш Урок Года
+          <h1 className="text-3xl md:text-4xl font-bold text-purple-900 mb-2">
+            КАРМИЧЕСКИЙ УРОК 2026 ГОДА
           </h1>
-          <p className="text-[#ff69b4] mt-2 text-lg font-medium">Код {lessonCode}</p>
         </header>
+
+        {/* Картинка для мобильных - после заголовка */}
+        <div className="md:hidden mb-6">
+          <CodeImage code={lessonCode} title={lessonData.title} />
+        </div>
 
         {/* Треугольник */}
         <KarmaTriangle 
@@ -98,105 +87,102 @@ export default function YearLessonPage({ lessonCode, onBack, onCodeClick }: Year
           onCodeClick={onCodeClick}
         />
 
-        {/* Описание урока года */}
-        {data && (
-          <section className="glass-card p-6 mb-6 animate-fade-in-delay">
-            <h2 className="text-xl font-bold text-[#ffd700] mb-4 flex items-center gap-2">
-              <span>🌟</span> {data.title}
-            </h2>
-            <p className="text-[#ff69b4] text-sm font-medium mb-4 italic">
-              {data.shortDesc}
-            </p>
-            <p className="text-[#e8d5f5] leading-relaxed text-sm md:text-base">
-              {data.fullDesc}
-            </p>
-          </section>
-        )}
-
-        {/* Описание кода кармы */}
-        {(() => {
-          const karmaData = getKarmaData(String(lessonCode));
-          return (
-            <section className="glass-card p-6 mb-6 animate-fade-in-delay">
-              <h2 className="text-xl font-bold text-[#ffd700] mb-4 flex items-center gap-2">
-                <span>{karmaData.symbol}</span> Код {lessonCode}: {karmaData.title}
-              </h2>
-              <p className="text-[#ff69b4] text-sm font-medium mb-4 italic">
-                {karmaData.subtitle}
-              </p>
-              <p className="text-[#e8d5f5] leading-relaxed text-sm md:text-base mb-4">
-                {karmaData.shortDesc}
+        {/* Кармические уроки 2026 года */}
+        <section className="bg-white rounded-2xl p-6 mb-6 border-2 border-purple-300 shadow-lg animate-fade-in-delay-2">
+          <h2 className="text-2xl font-bold text-purple-900 mb-6 text-center">
+            КАРМИЧЕСКИЕ УРОКИ 2026 ГОДА
+          </h2>
+          
+          <div className="code-content-with-image">
+            <div className="code-text">
+              <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center gap-2">
+                <span className="text-2xl">✨</span> КОД {lessonCode} — {lessonData.title}
+              </h3>
+              
+              <p className="text-gray-700 font-medium mb-4 text-base md:text-lg">
+                Ваши кармические уроки на 2026 год:
               </p>
               
-              {/* Сильные стороны */}
-              {karmaData.strengths.length > 0 && (
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-[#ffd700] mb-2">💫 Сильные стороны:</h3>
-                  <ul className="space-y-1">
-                    {karmaData.strengths.map((strength, i) => (
-                      <li key={i} className="text-[#e8d5f5] text-sm flex items-start gap-2">
-                        <span className="text-[#ffd700]">•</span>
-                        <span>{strength}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              <div className="space-y-3">
+                {lessonData.lessons.map((lesson, i) => (
+                  <div key={i} className="flex items-start gap-3 bg-purple-50 p-4 rounded-xl border border-purple-200">
+                    <span className="text-purple-600 text-xl flex-shrink-0">~</span>
+                    <p className="text-gray-800 text-base md:text-lg leading-relaxed">
+                      {lesson}
+                    </p>
+                  </div>
+                ))}
+              </div>
 
-              {/* Кармические задачи */}
-              {karmaData.karmaTasks.length > 0 && (
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-[#ffd700] mb-2">🎯 Кармические задачи:</h3>
-                  <ul className="space-y-1">
-                    {karmaData.karmaTasks.map((task, i) => (
-                      <li key={i} className="text-[#e8d5f5] text-sm flex items-start gap-2">
-                        <span className="text-[#ffd700]">•</span>
-                        <span>{task}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Аффирмация */}
-              {karmaData.affirmation && (
-                <div className="mt-4 p-4 bg-gradient-to-r from-purple-900/30 to-pink-900/30 rounded-xl">
-                  <p className="text-[#ffd700] italic text-center">
-                    "{karmaData.affirmation}"
+              {lessonData.summary && (
+                <div className="mt-6 bg-gradient-to-r from-pink-50 to-purple-50 p-4 rounded-xl border-2 border-pink-300">
+                  <p className="text-gray-800 text-sm md:text-base leading-relaxed italic">
+                    {lessonData.summary}
                   </p>
                 </div>
               )}
-            </section>
-          );
-        })()}
+            </div>
+            
+            {/* Картинка справа на десктопе */}
+            <div className="code-image-container">
+              <CodeImage code={lessonCode} title={lessonData.title} />
+            </div>
+          </div>
+        </section>
+
+        {/* Вступление */}
+        <section className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 mb-6 border-2 border-purple-200 animate-fade-in-delay">
+          <p className="text-gray-800 leading-relaxed text-sm md:text-base mb-4">
+            Сентябрь 2026 года — это зеркало 2027 года. Сентябрь формирует события, которые придут к вам в следующем году. И Урок года, рассчитанный по вашей дате рождения, показывает - что нужно сделать до конца 2026 года, чтобы 2027 год прожить легче.
+          </p>
+          <p className="text-gray-800 leading-relaxed text-sm md:text-base mb-4">
+            Урок Года объясняет, какие качества вам сейчас стоит развить, какие сложности, какой путь пройти, чему научиться.
+          </p>
+          <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-4 rounded">
+            <p className="text-gray-800 text-sm md:text-base">
+              <span className="text-green-600 font-bold">➕</span> Когда вы следуете кармическим урокам года, вы быстрее достигаете целей, меньше ошибаетесь, а жизнь становится понятнее. И конечно можно прогулять эти уроки, НО…..
+            </p>
+          </div>
+          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4 rounded">
+            <p className="text-gray-800 text-sm md:text-base">
+              <span className="text-red-600 font-bold">➖</span> Если их игнорировать, уроки все равно пройти придется, но в более жесткой форме. Например, через лишения, потери, неприятные ситуации.
+            </p>
+          </div>
+          <p className="text-gray-800 leading-relaxed text-sm md:text-base mb-4">
+            Одни и те же проблемы могут возвращаться снова и снова, лишая сил и надежды на то, что «все наладится». Это похоже на блуждание в лабиринте, из которого выход никак не найти.
+          </p>
+          <p className="text-purple-900 font-semibold text-center text-base md:text-lg mt-6">
+            Кармические уроки — не наказание, а подсказки.
+          </p>
+        </section>
 
         {/* 9 признаков */}
-        <section className="glass-card p-6 mb-6 animate-fade-in-delay">
-          <h2 className="text-xl font-bold text-[#ffd700] mb-4 text-center">
+        <section className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 mb-6 border-2 border-purple-200 animate-fade-in-delay">
+          <h2 className="text-xl font-bold text-purple-900 mb-4 text-center">
             9 признаков того, что Карма Включилась
           </h2>
           
           <div className="space-y-2">
             {SIGNS_TEXT.map((sign) => (
-              <div key={sign.num} className="border border-[#ffd700]/20 rounded-xl overflow-hidden">
+              <div key={sign.num} className="border border-purple-300 rounded-xl overflow-hidden bg-white">
                 <button
                   onClick={() => setExpandedSign(expandedSign === sign.num ? null : sign.num)}
-                  className="w-full p-3 flex items-center gap-3 text-left hover:bg-white/5 transition-colors"
+                  className="w-full p-3 flex items-center gap-3 text-left hover:bg-purple-50 transition-colors"
                 >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#ffd700] to-[#ff69b4] flex items-center justify-center text-[#1a0a2e] font-bold text-sm flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                     {sign.num}
                   </div>
-                  <span className="text-[#e8d5f5] text-sm flex-1">
+                  <span className="text-gray-800 text-sm flex-1">
                     {sign.text.split(".")[0]}.
                   </span>
-                  <span className={`text-[#ffd700] transition-transform ${expandedSign === sign.num ? "rotate-180" : ""}`}>
+                  <span className={`text-purple-600 transition-transform ${expandedSign === sign.num ? "rotate-180" : ""}`}>
                     ▼
                   </span>
                 </button>
                 
-                {expandedSign === sign.num && (
+                {(expandedSign === sign.num || showAllSigns) && (
                   <div className="px-3 pb-3 pt-0 animate-fade-in">
-                    <p className="text-[#e8d5f5]/80 text-sm pl-11 leading-relaxed">
+                    <p className="text-gray-700 text-sm pl-11 leading-relaxed">
                       {sign.text}
                     </p>
                   </div>
@@ -208,60 +194,77 @@ export default function YearLessonPage({ lessonCode, onBack, onCodeClick }: Year
           {/* Развёрнуть/свернуть все */}
           <button
             onClick={() => setShowAllSigns(!showAllSigns)}
-            className="mt-4 w-full py-2 text-sm text-[#ffd700] hover:text-[#ff69b4] transition-colors"
+            className="mt-4 w-full py-2 text-sm text-purple-700 hover:text-pink-600 transition-colors font-medium"
           >
             {showAllSigns ? "Свернуть все" : "Развернуть все"}
           </button>
         </section>
 
         {/* Вывод */}
-        <section className="glass-card p-6 mb-6 animate-fade-in-delay-2 border-[#ffd700]/30">
-          <p className="text-[#e8d5f5] leading-relaxed text-sm md:text-base italic">
+        <section className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl p-6 mb-6 border-2 border-purple-300 animate-fade-in-delay-2">
+          <p className="text-gray-800 leading-relaxed text-sm md:text-base italic">
             Если вы узнали себя хотя бы в одном пункте, а тем более сразу в нескольких — значит, пришло время разобраться со своей кармой глубже: понять её задачи, увидеть повторяющиеся сценарии, осознать, какой урок сейчас проходит ваша жизнь, и начать его гармонизировать.
           </p>
-          <p className="text-[#e8d5f5] leading-relaxed text-sm md:text-base mt-4">
+          <p className="text-gray-800 leading-relaxed text-sm md:text-base mt-4">
             Именно этим мы и будем заниматься дальше на практикуме. И я очень рада, что вы оказались здесь именно сейчас. В нужное время и в нужном месте.
           </p>
         </section>
 
-        {/* Рекомендации */}
-        <section className="glass-card p-6 mb-6 animate-fade-in-delay-2">
-          <h2 className="text-xl font-bold text-[#ffd700] mb-4 flex items-center gap-2">
-            <span>💫</span> Рекомендации на год
+        {/* Ближайшие эфиры */}
+        <section className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 mb-6 border-2 border-purple-200 animate-fade-in-delay-2">
+          <h2 className="text-xl font-bold text-purple-900 mb-4 text-center">
+            📅 Ближайшие эфиры
           </h2>
-          <ul className="space-y-3">
-            {data.recommendations.map((rec, i) => (
-              <li key={i} className="flex items-start gap-3">
-                <span className="text-[#ffd700] mt-1">✦</span>
-                <span className="text-[#e8d5f5] text-sm">{rec}</span>
-              </li>
-            ))}
-          </ul>
+          <p className="text-gray-800 text-sm mb-4 text-center">
+            Приходите на бесплатные эфиры, где я подробно разберу ваши коды и дам персональные рекомендации:
+          </p>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-purple-200">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-lg font-bold text-white shrink-0">
+                1
+              </div>
+              <div>
+                <div className="font-semibold text-purple-900">20 сентября</div>
+                <div className="text-xs text-gray-600">18:00 МСК • Разбор кодов кармы</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-purple-200">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-lg font-bold text-white shrink-0">
+                2
+              </div>
+              <div>
+                <div className="font-semibold text-purple-900">21 сентября</div>
+                <div className="text-xs text-gray-600">20:00 МСК • Практики активации кодов</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-purple-200">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-lg font-bold text-white shrink-0">
+                3
+              </div>
+              <div>
+                <div className="font-semibold text-purple-900">23 сентября</div>
+                <div className="text-xs text-gray-600">20:00 МСК • Индивидуальные разборы</div>
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowEvents(true)}
+            className="mt-5 w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-base hover:opacity-90 transition-opacity shadow-lg"
+          >
+            Записаться на эфир ✨
+          </button>
         </section>
 
-        {/* Аффирмация */}
-        {data.affirmation && (
-          <section className="glass-card p-6 mb-6 text-center bg-gradient-to-br from-[#ffd700]/10 to-[#ff69b4]/10 border-[#ffd700]/30 animate-fade-in-delay-2">
-            <div className="text-2xl mb-2">🌟</div>
-            <p className="text-[#ffd700] italic text-sm md:text-base leading-relaxed">
-              «{data.affirmation}»
-            </p>
-          </section>
-        )}
-
-        {/* Кнопка назад */}
-        <button
-          onClick={onBack}
-          className="w-full py-3 rounded-xl border border-[#ffd700]/30 text-[#ffd700] font-medium text-sm hover:bg-[#ffd700]/10 transition-colors mb-6"
-        >
-          ← Вернуться назад
-        </button>
-
         {/* Футер */}
-        <footer className="text-center text-[#e8d5f5]/60 text-xs pb-6">
+        <footer className="text-center text-gray-500 text-xs pb-6 mt-6">
           <p>✨ Коды Кармы ✨</p>
         </footer>
       </div>
+
+      {/* Модалка выбора календаря */}
+      {showEvents && (
+        <CalendarModal onClose={() => setShowEvents(false)} />
+      )}
     </div>
   );
 }
